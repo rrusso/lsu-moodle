@@ -181,3 +181,6 @@
 [submodule "blocks/turnitin"]
 	path = blocks/turnitin
 	url = git@github.com:lsuits/block_turnitin.git
+[submodule "grade/report/grade_breakdown"]
+	path = grade/report/grade_breakdown
+	url = git@github.com:lsuits/grade_breakdown.git
