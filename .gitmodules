@@ -181,3 +181,6 @@
 [submodule "grade/import/pearson"]
 	path = grade/import/pearson
 	url = git@github.com:lsuits/pearson.git
+[submodule "blocks/turnitin"]
+	path = blocks/turnitin
+	url = git@github.com:lsuits/block_turnitin.git
