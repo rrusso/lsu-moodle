@@ -1,9 +1,6 @@
 [submodule "blocks/backadel"]
 	path = blocks/backadel
 	url = git@github.com:lsuits/backadel
-[submodule "blocks/bulk_delete"]
-	path = blocks/bulk_delete
-	url = git@github.com:lsuits/bulk_delete
 [submodule "blocks/cps"]
 	path = blocks/cps
 	url = git@github.com:lsuits/cps
