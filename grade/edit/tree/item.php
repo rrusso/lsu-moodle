@@ -52,6 +52,8 @@ $returnurl = $gpr->get_return_url('index.php?id='.$course->id);
 
 $heading = get_string('itemsedit', 'grades');
 
+$curve_to = get_config('moodle', 'grade_multfactor_alt');
+
 if ($grade_item = grade_item::fetch(array('id'=>$id, 'courseid'=>$courseid))) {
     // redirect if outcomeid present
     if (!empty($grade_item->outcomeid) && !empty($CFG->enableoutcomes)) {
@@ -86,10 +88,18 @@ if ($item->hidden > 1) {
 
 $item->locked = !empty($item->locked);
 
+$multfactor = $item->multfactor;
+$curve_decimals = 4;
+
+if ($curve_to) {
+    $curve_decimals = $decimalpoints;
+    $multfactor *= $item->grademax;
+}
+
 $item->grademax        = format_float($item->grademax, $decimalpoints);
 $item->grademin        = format_float($item->grademin, $decimalpoints);
 $item->gradepass       = format_float($item->gradepass, $decimalpoints);
-$item->multfactor      = format_float($item->multfactor, 4);
+$item->multfactor      = format_float($multfactor, $curve_decimals);
 $item->plusfactor      = format_float($item->plusfactor, 4);
 
 if ($parent_category->aggregation == GRADE_AGGREGATE_SUM or $parent_category->aggregation == GRADE_AGGREGATE_WEIGHTED_MEAN2) {
@@ -139,9 +149,22 @@ if ($mform->is_cancelled()) {
         }
     }
 
+    // Special handling of curve to
+    if ($curve_to) {
+        if (empty($data->multfactor) || $data->multfactor <= 0.0000) {
+            $data->multfactor = 1.0000;
+        } else if (!isset($data->curve_to) and isset($item->multfactor)) {
+            $data->multfactor = $grade_item->multfactor;
+        } else {
+            $data->multfactor = $data->multfactor / $data->grademax;
+        }
+    }
+
     $grade_item = new grade_item(array('id'=>$id, 'courseid'=>$courseid));
     grade_item::set_properties($grade_item, $data);
     $grade_item->outcomeid = null;
+
+    unset($grade_item->anonymous);
 
     // Handle null decimals value
     if (!property_exists($data, 'decimals') or $data->decimals < 0) {
@@ -151,6 +174,15 @@ if ($mform->is_cancelled()) {
     if (empty($grade_item->id)) {
         $grade_item->itemtype = 'manual'; // all new items to be manual only
         $grade_item->insert();
+
+        // Anonymous check
+        if (isset($data->anonymous) and grade_anonymous::is_supported($course)) {
+            $anon = new grade_anonymous(array('itemid' => $grade_item->id));
+
+            if (empty($anon->id)) {
+                $anon->insert();
+            }
+        }
 
         // set parent if needed
         if (isset($data->parentcategory)) {

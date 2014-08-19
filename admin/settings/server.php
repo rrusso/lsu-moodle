@@ -152,6 +152,8 @@ $temp->add(new admin_setting_configselect('gradehistorylifetime', new lang_strin
                                                                                                      60 => new lang_string('numdays', '', 60),
                                                                                                      30 => new lang_string('numdays', '', 30))));
 
+$temp->add(new admin_setting_configtime('gradehistorylifetimestarthour', 'gradehistorylifetimetartminute', get_string('gradehistorylifetimestart', 'grades'), get_string('configgradehistorylifetimestart', 'grades'), array('h' => 1, 'm' => 15)));
+
 $ADMIN->add('server', $temp);
 
 

@@ -55,7 +55,10 @@ class grader_report_preferences_form extends moodleform {
         if (has_capability('moodle/grade:manage', $context)) {
 
             $preferences['prefshow'] = array();
-            $preferences['prefshow']['showcalculations']  = $checkbox_default;
+            // if no calculations setting is turned on, don't show this option
+            if(!get_config('moodle', 'grade_report_nocalculations')){
+                $preferences['prefshow']['showcalculations']  = $checkbox_default;
+            }
             $preferences['prefshow']['showeyecons']       = $checkbox_default;
             if ($canviewhidden) {
                 $preferences['prefshow']['showaverages']  = $checkbox_default;
@@ -84,7 +87,8 @@ class grader_report_preferences_form extends moodleform {
                                                                           0=>0, 1=>1, 2=>2, 3=>3, 4=>4, 5=>5);
                 $preferences['prefrows']['meanselection']  = array(GRADE_REPORT_PREFERENCE_DEFAULT => '*default*',
                                                                    GRADE_REPORT_MEAN_ALL => get_string('meanall', 'grades'),
-                                                                   GRADE_REPORT_MEAN_GRADED => get_string('meangraded', 'grades'));
+                                                                   GRADE_REPORT_MEAN_GRADED => get_string('meangraded', 'grades'),
+                                                                   GRADE_REPORT_MEAN_GRADED_NO_ZEROS => get_string('meangradednozeros', 'grades'));
 
                 $advanced = array_merge($advanced, array('averagesdisplaytype', 'averagesdecimalpoints'));
             }
@@ -102,6 +106,7 @@ class grader_report_preferences_form extends moodleform {
             if (has_capability('moodle/course:viewsuspendedusers', $context)) {
                 $preferences['prefgeneral']['showonlyactiveenrol'] = $checkbox_default;
             }
+            $preferences['prefgeneral']['repeatheaders'] = 'text';
             $preferences['prefgeneral']['aggregationposition'] = array(GRADE_REPORT_PREFERENCE_DEFAULT => '*default*',
                                                                        GRADE_REPORT_AGGREGATION_POSITION_FIRST => get_string('positionfirst', 'grades'),
                                                                        GRADE_REPORT_AGGREGATION_POSITION_LAST => get_string('positionlast', 'grades'));
@@ -111,6 +116,7 @@ class grader_report_preferences_form extends moodleform {
             $preferences['prefshow']['showactivityicons'] = $checkbox_default;
             $preferences['prefshow']['showranges'] = $checkbox_default;
             $preferences['prefshow']['showanalysisicon'] = $checkbox_default;
+            $preferences['prefshow']['showweightedpercents'] = $checkbox_default;
 
             if ($canviewhidden) {
                 $preferences['prefrows']['shownumberofgrades'] = $checkbox_default;
@@ -169,10 +175,14 @@ class grader_report_preferences_form extends moodleform {
                     $options[GRADE_REPORT_PREFERENCE_DEFAULT] = get_string('reportdefault', 'grades', $default);
                 }
 
-                $label = get_string($lang_string, 'grades') . $number;
+                if ($lang_string == 'integrate_quick_edit') {
+                    $label = get_string('quick_edit', 'gradereport_grader');
+                } else {
+                    $label = get_string($lang_string, 'grades') . $number;
+                }
 
                 $mform->addElement($type, $full_pref, $label, $options);
-                if ($lang_string != 'showuserimage') {
+                if ($lang_string != 'showuserimage' and $lang_string != 'integrate_quick_edit') {
                     $mform->addHelpButton($full_pref, $lang_string, 'grades');
                 }
                 $mform->setDefault($full_pref, $pref_value);

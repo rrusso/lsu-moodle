@@ -52,6 +52,8 @@ $returnurl = $gpr->get_return_url('index.php?id='.$course->id);
 
 $heading = get_string('categoryedit', 'grades');
 
+$curve_to = get_config('moodle', 'grade_multfactor_alt');
+
 if ($id) {
     if (!$grade_category = grade_category::fetch(array('id'=>$id, 'courseid'=>$course->id))) {
         print_error('invalidcategory');
@@ -97,6 +99,17 @@ if ($id) {
         $category->{"grade_item_$key"} = $value;
     }
 }
+
+$multfactor = $grade_item->multfactor;
+$curve_decimals = 4;
+$decimalpoints = $grade_item->get_decimals();
+
+if ($curve_to) {
+    $curve_decimals = $decimalpoints;
+    $multfactor *= $category->grade_item_grademax;
+}
+
+$category->grade_item_multfactor = format_float($multfactor, $curve_decimals);
 
 $mform = new edit_category_form(null, array('current'=>$category, 'gpr'=>$gpr));
 
@@ -164,6 +177,17 @@ if ($mform->is_cancelled()) {
     foreach ($convert as $param) {
         if (property_exists($itemdata, $param)) {
             $itemdata->$param = unformat_float($itemdata->$param);
+        }
+    }
+
+    // Special handling of curve-to
+    if ($curve_to) {
+        if (empty($itemdata->multfactor) || $itemdata->multfactor <= 0.0000) {
+            $itemdata->multfactor = 1.0000;
+        } else if (!isset($data->curve_to) and isset($grade_item->multfactor)) {
+            $itemdata->multfactor = $grade_item->multfactor;
+        } else {
+            $itemdata->multfactor = $itemdata->multfactor / $itemdata->grademax;
         }
     }
 
