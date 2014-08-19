@@ -1,0 +1,183 @@
+[submodule "blocks/backadel"]
+	path = blocks/backadel
+	url = git@github.com:lsuits/backadel
+[submodule "blocks/bulk_delete"]
+	path = blocks/bulk_delete
+	url = git@github.com:lsuits/bulk_delete
+[submodule "blocks/cps"]
+	path = blocks/cps
+	url = git@github.com:lsuits/cps
+[submodule "blocks/export_forum"]
+	path = blocks/export_forum
+	url = git@github.com:lsuits/export_forum
+[submodule "blocks/grade_notify"]
+	path = blocks/grade_notify
+	url = git@github.com:lsuits/grade_notify
+[submodule "blocks/grades_at_a_glance"]
+	path = blocks/grades_at_a_glance
+	url = git@github.com:lsuits/grades_at_a_glance
+[submodule "blocks/helpdesk"]
+	path = blocks/helpdesk
+	url = git@github.com:lsuits/helpdesk
+[submodule "blocks/instructor_profile"]
+	path = blocks/instructor_profile
+	url = git@github.com:lsuits/instructor_profile
+[submodule "blocks/my_picture"]
+	path = blocks/my_picture
+	url = git@github.com:lsuits/my_picture
+[submodule "blocks/post_grades"]
+	path = blocks/post_grades
+	url = git@github.com:lsuits/post_grades
+[submodule "blocks/quickmail"]
+	path = blocks/quickmail
+	url = git@github.com:lsuits/quickmail
+[submodule "blocks/rollsheet"]
+	path = blocks/rollsheet
+	url = git@github.com:lsuits/rollsheet
+[submodule "blocks/sentinel"]
+	path = blocks/sentinel
+	url = git@github.com:lsuits/block_sentinel
+[submodule "blocks/simple_restore"]
+	path = blocks/simple_restore
+	url = git@github.com:lsuits/simple_restore
+[submodule "blocks/student_gradeviewer"]
+	path = blocks/student_gradeviewer
+	url = git@github.com:lsuits/student_gradeviewer
+[submodule "blocks/ues_logs"]
+	path = blocks/ues_logs
+	url = git@github.com:lsuits/ues_logs
+[submodule "blocks/ues_meta_viewer"]
+	path = blocks/ues_meta_viewer
+	url = git@github.com:lsuits/ues_meta_viewer
+[submodule "blocks/ues_people"]
+	path = blocks/ues_people
+	url = git@github.com:lsuits/ues_people
+[submodule "blocks/ues_reprocess"]
+	path = blocks/ues_reprocess
+	url = git@github.com:lsuits/ues_reprocess
+[submodule "enrol/ues"]
+	path = enrol/ues
+	url = git@github.com:lsuits/ues
+[submodule "local/ap_report"]
+	path = local/ap_report
+	url = git@github.com:lsuits/ap_report
+[submodule "local/feature_request"]
+	path = local/feature_request
+	url = git@github.com:lsuits/feature_request
+[submodule "local/proctoru"]
+	path = local/proctoru
+	url = git@github.com:lsuits/local_proctoru
+[submodule "local/xml"]
+	path = local/xml
+	url = git@github.com:lsuits/lsu_xml_enrollment_provider
+[submodule "theme/lsu"]
+	path = theme/lsu
+	url = git@github.com:lsuits/lsu_theme.git
+[submodule "mod/attendance"]
+	path = mod/attendance
+	url = https://github.com/University-of-Strathclyde-LTE-Team/moodle-mod_attendance
+[submodule "mod/bigbluebuttonbn"]
+	path = mod/bigbluebuttonbn
+	url = https://github.com/lsuits/moodle-mod_bigbluebuttonbn.git
+[submodule "mod/certificate"]
+	path = mod/certificate
+	url = https://github.com/lsuits/moodle-mod_certificate
+[submodule "mod/hotpot"]
+	path = mod/hotpot
+	url = https://github.com/gbateson/moodle-mod_hotpot
+[submodule "question/format/hotpot"]
+	path = question/format/hotpot
+	url = https://github.com/gbateson/moodle-qformat_hotpot
+[submodule "mod/lightboxgallery"]
+	path = mod/lightboxgallery
+	url = https://github.com/netspotau/moodle-mod_lightboxgallery
+[submodule "mod/turningtech"]
+	path = mod/turningtech
+	url = https://github.com/lsuits/mod_turningtech
+[submodule "blocks/turningtech"]
+	path = blocks/turningtech
+	url = https://github.com/lsuits/block_turningtech
+[submodule "blocks/bfwpub"]
+	path = blocks/bfwpub
+	url = git@github.com:lsuits/bfwpub.git
+[submodule "local/mr"]
+	path = local/mr
+	url = https://github.com/moodlerooms/moodle-local_mr
+[submodule "cache/stores/redis"]
+	path = cache/stores/redis
+	url = https://github.com/moodlerooms/moodle-cachestore_redis
+[submodule "local/adminer"]
+	path = local/adminer
+	url = https://github.com/lsuits/adminer
+[submodule "blocks/mhaairs"]
+	path = blocks/mhaairs
+	url = git@github.com:lsuits/mhaairs.git
+[submodule "blocks/csv_enrol"]
+	path = blocks/csv_enrol
+	url = https://bitbucket.org/jpeak5/csv_enrol
+[submodule "question/type/oumultiresponse"]
+	path = question/type/oumultiresponse
+	url = https://github.com/moodleou/moodle-qtype_oumultiresponse
+[submodule "auth/googleoauth2"]
+	path = auth/googleoauth2
+	url = https://github.com/lsuits/moodle-auth_googleoauth2
+[submodule "blocks/panopto"]
+	path = blocks/panopto
+	url = https://github.com/lsuits/Moodle-2.0-Plugin-for-Panopto
+[submodule "grade/import/verboseimport"]
+	path = grade/import/verboseimport
+	url = https://github.com/lsuits/grade_import_verboseimport
+[submodule "mod/kalvidassign"]
+	path = mod/kalvidassign
+	url = git@github.com:lsuits/moodle-mod_kalvidassign.git
+[submodule "mod/kalvidpres"]
+	path = mod/kalvidpres
+	url = git@github.com:lsuits/moodle-mod_kalvidpres.git
+[submodule "mod/kalvidres"]
+	path = mod/kalvidres
+	url = git@github.com:lsuits/moodle-mod_kalvidres.git
+[submodule "repository/kaltura"]
+	path = repository/kaltura
+	url = git@github.com:lsuits/moodle-repository_kaltura.git
+[submodule "repository/kaltura_uploader"]
+	path = repository/kaltura_uploader
+	url = git@github.com:lsuits/moodle-repository_kaltura_uploader.git
+[submodule "local/mymedia"]
+	path = local/mymedia
+	url = git@github.com:lsuits/moodle-local_mymedia.git
+[submodule "local/kaltura"]
+	path = local/kaltura
+	url = git@github.com:lsuits/moodle-local_kaltura.git
+[submodule "filter/kaltura"]
+	path = filter/kaltura
+	url = git@github.com:lsuits/moodle-filter_kaltura.git
+[submodule "grade/import/smart"]
+	path = grade/import/smart
+	url = git@github.com:lsuits/smart-importer.git
+[submodule "grade/report/gradebook_builder"]
+	path = grade/report/gradebook_builder
+	url = git@github.com:lsuits/gradebook_builder.git
+[submodule "grade/report/history"]
+	path = grade/report/history
+	url = git@github.com:lsuits/moodle-gradereport_history.git
+[submodule "grade/report/projected"]
+	path = grade/report/projected
+	url = git@github.com:lsuits/projected-final-grade.git
+[submodule "grade/report/quick_edit"]
+	path = grade/report/quick_edit
+	url = git@github.com:lsuits/quick_edit.git
+[submodule "local/lsu"]
+	path = local/lsu
+	url = git@github.com:lsuits/ues_lsu_enrollment.git
+[submodule "local/online"]
+	path = local/online
+	url = git@github.com:lsuits/online.git
+[submodule "mod/turnitintooltwo"]
+	path = mod/turnitintooltwo
+	url = git@github.com:lsuits/mod_turnitintooltwo.git
+[submodule "grade/export/csv"]
+	path = grade/export/csv
+	url = git@github.com:lsuits/csv.git
+[submodule "grade/import/pearson"]
+	path = grade/import/pearson
+	url = git@github.com:lsuits/pearson.git
