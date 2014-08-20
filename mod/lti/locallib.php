@@ -61,6 +61,14 @@ define('LTI_LAUNCH_CONTAINER_EMBED_NO_BLOCKS', 3);
 define('LTI_LAUNCH_CONTAINER_WINDOW', 4);
 define('LTI_LAUNCH_CONTAINER_REPLACE_MOODLE_WINDOW', 5);
 
+/*
+ * @author LSU 
+ * @see https://github.com/lsuits/moodle/issues/6
+ */
+define('LTI_LAUNCH_COURSE_ID_SHORTNAME', 0);
+define('LTI_LAUNCH_COURSE_ID_IDNUMBER',1);
+define('LTI_LAUNCH_COURSE_ID_ID',2);
+
 define('LTI_TOOL_STATE_ANY', 0);
 define('LTI_TOOL_STATE_CONFIGURED', 1);
 define('LTI_TOOL_STATE_PENDING', 2);
@@ -95,6 +103,7 @@ function lti_view($instance) {
         //There is no admin configuration for this tool. Use configuration in the lti instance record plus some defaults.
         $typeconfig = (array)$instance;
 
+        $typeconfig['sendusername'] = $instance->instructorchoicesendusername;
         $typeconfig['sendname'] = $instance->instructorchoicesendname;
         $typeconfig['sendemailaddr'] = $instance->instructorchoicesendemailaddr;
         $typeconfig['customparameters'] = $instance->instructorcustomparameters;
@@ -240,6 +249,23 @@ function lti_build_request($instance, $typeconfig, $course) {
 
     $role = lti_get_ims_role($USER, $instance->cmid, $instance->course);
 
+//  if (find the vlue for the setting->shortname or ignore the if/else and add it below in the 'context_label' => $course->my special value here) {
+    if(isset($typeconfig['courseidoptions'])) {
+        switch ($typeconfig['courseidoptions']) {
+            case 0:
+                $label = $course->shortname;
+                break;
+            case 1:
+                $label = $course->idnumber;
+                break;
+            case 2:
+                $label = $course->id;
+                break;
+        } 
+    } else {
+        $label = $course->shortname;
+    }
+
     $requestparams = array(
         'resource_link_id' => $instance->id,
         'resource_link_title' => $instance->name,
@@ -285,6 +311,11 @@ function lti_build_request($instance, $typeconfig, $course) {
     if ( $typeconfig['sendemailaddr'] == LTI_SETTING_ALWAYS ||
          ( $typeconfig['sendemailaddr'] == LTI_SETTING_DELEGATE && $instance->instructorchoicesendemailaddr == LTI_SETTING_ALWAYS ) ) {
         $requestparams['lis_person_contact_email_primary'] = $USER->email;
+    }
+
+    if ( $typeconfig['sendusername'] == LTI_SETTING_ALWAYS ||
+         ( $typeconfig['sendusername'] == LTI_SETTING_DELEGATE && $instance->instructorchoicesendusername == LTI_SETTING_ALWAYS ) ) {
+        $requestparams['lis_person_sourcedid'] = $USER->username;
     }
 
     // Concatenate the custom parameters from the administrator and the instructor
@@ -790,7 +821,10 @@ function lti_get_type_config_from_instance($id) {
     if (isset($config['toolurl'])) {
         $type->lti_toolurl = $config['toolurl'];
     }
-    if (isset($config['instructorchoicesendname'])) {
+    if (isset($config['instructorchoicesendusername'])) {
+        $type->lti_sendusername = $config['instructorchoicesendusername'];
+    }
+    if (isset($config['instructorchoice ndname'])) {
         $type->lti_sendname = $config['instructorchoicesendname'];
     }
     if (isset($config['instructorchoicesendemailaddr'])) {
@@ -836,9 +870,14 @@ function lti_get_type_type_config($id) {
     if (isset($config['password'])) {
         $type->lti_password = $config['password'];
     }
-
+    if (isset($config['sendusername'])) {
+        $type->lti_sendusername = $config['sendusername'];
+    }
     if (isset($config['sendname'])) {
         $type->lti_sendname = $config['sendname'];
+    }
+    if (isset($config['instructorchoicesendusername'])) {
+        $type->lti_instructorchoicesendusername = $config['instructorchoicesendusername'];
     }
     if (isset($config['instructorchoicesendname'])) {
         $type->lti_instructorchoicesendname = $config['instructorchoicesendname'];
@@ -861,15 +900,12 @@ function lti_get_type_type_config($id) {
     if (isset($config['instructorchoiceallowroster'])) {
         $type->lti_instructorchoiceallowroster = $config['instructorchoiceallowroster'];
     }
-
     if (isset($config['customparameters'])) {
         $type->lti_customparameters = $config['customparameters'];
     }
-
     if (isset($config['forcessl'])) {
         $type->lti_forcessl = $config['forcessl'];
     }
-
     if (isset($config['organizationid'])) {
         $type->lti_organizationid = $config['organizationid'];
     }
@@ -882,17 +918,17 @@ function lti_get_type_type_config($id) {
     if (isset($config['launchcontainer'])) {
         $type->lti_launchcontainer = $config['launchcontainer'];
     }
-
     if (isset($config['coursevisible'])) {
         $type->lti_coursevisible = $config['coursevisible'];
     }
-
     if (isset($config['debuglaunch'])) {
         $type->lti_debuglaunch = $config['debuglaunch'];
     }
-
     if (isset($config['module_class_type'])) {
         $type->lti_module_class_type = $config['module_class_type'];
+    }
+    if (isset($config['courseidoptions'])) {
+        $type->lti_courseidoptions = $config['courseidoptions'];
     }
 
     return $type;
@@ -910,6 +946,10 @@ function lti_prepare_type_for_save($type, $config) {
     $config->lti_forcessl = $type->forcessl;
 
     $type->timemodified = time();
+
+    if(isset($config->lti_courseidoptions)){
+        $type->courseidoptions = $config->lti_courseidoptions;
+    }
 
     unset ($config->lti_typename);
     unset ($config->lti_toolurl);

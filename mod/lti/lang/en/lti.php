@@ -94,7 +94,7 @@ $string['configresourceurl'] = 'Default Resource URL';
 $string['configtoolurl'] = 'Default Remote Tool URL';
 $string['configtypes'] = 'Enable LTI Applications';
 $string['course_tool_types'] = 'Course tool types';
-$string['courseid'] = 'Course id number';
+$string['courseid'] = 'Moodle course ID';
 $string['coursemisconf'] = 'Course is misconfigured';
 $string['createdon'] = 'Created On';
 $string['curllibrarymissing'] = 'PHP Curl library must be installed to use LTI';
@@ -109,6 +109,10 @@ $string['debuglaunch'] = 'Debug Option';
 $string['debuglaunchoff'] = 'Normal launch';
 $string['debuglaunchon'] = 'Debug launch';
 $string['default'] = 'Default';
+
+$string['default_launch_course_id'] = 'Course Identifier';
+$string['default_launch_course_id_help'] = 'Choose which field in the \'course\' database table will be used to map Moodle courses to External Tool course records. Possible values are: id, shortname or idnumber';
+
 $string['default_launch_container'] = 'Default Launch Container';
 $string['default_launch_container_help'] = 'The launch container affects the display of the tool when launched from the course. Some launch containers provide more screen
 real estate to the tool, and others provide a more integrated feel with the Moodle environemnt.
@@ -367,6 +371,12 @@ The tool provider may need launcher\'s e-mail addresses to distinguish users wit
 to users based on actions within the tool.
 
 Note that this setting may be overriden in the tool configuration.';
+
+$string['share_username'] = 'Share launcher\'s username with the tool';
+$string['share_username_admin'] = 'Share launcher\'s username with tool';
+$string['share_username_admin_help'] = 'Specify whether the user name of the user launching the tool should be shared with the tool provider. The tool provider may need launchers\' usernames to show meaningful information within the tool.';
+$string['share_username_help'] = 'Specify whether the user name of the user launching the tool should be shared with the tool provider. The tool provider may need launchers\' usernames to show meaningful information within the tool. Note that this setting may be overriden in the tool configuration.';
+
 $string['share_name'] = 'Share launcher\'s name with the tool';
 $string['share_name_admin'] = 'Share launcher\'s name with tool';
 $string['share_name_admin_help'] = 'Specify whether the full name of the user launching the tool should be shared with the tool provider.

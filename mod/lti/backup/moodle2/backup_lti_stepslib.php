@@ -74,6 +74,7 @@ class backup_lti_activity_structure_step extends backup_activity_structure_step 
             'launchcontainer',
             'instructorchoicesendname',
             'instructorchoicesendemailaddr',
+            'instructorchoicesendusername',
             'instructorchoiceacceptgrades',
             'instructorchoiceallowroster',
             'instructorchoiceallowsetting',
