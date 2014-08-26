@@ -205,7 +205,7 @@ $event->add_record_snapshot('user', $user);
 $event->trigger();
 
 // Get the hidden field list.
-if (has_capability('moodle/user:viewhiddendetails', $coursecontext)) {
+if ($currentuser || has_capability('moodle/user:viewhiddendetails', $coursecontext)) {
     $hiddenfields = array();
 } else {
     $hiddenfields = array_flip(explode(',', $CFG->hiddenuserfields));
