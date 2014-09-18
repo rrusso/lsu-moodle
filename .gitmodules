@@ -72,7 +72,7 @@
 	url = git@github.com:lsuits/lsu_theme.git
 [submodule "mod/attendance"]
 	path = mod/attendance
-	url = https://github.com/University-of-Strathclyde-LTE-Team/moodle-mod_attendance
+	url = git@github.com:lsuits/moodle-mod_attendance.git
 [submodule "mod/bigbluebuttonbn"]
 	path = mod/bigbluebuttonbn
 	url = https://github.com/lsuits/moodle-mod_bigbluebuttonbn.git
