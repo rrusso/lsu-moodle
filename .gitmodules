@@ -184,3 +184,6 @@
 [submodule "grade/report/grade_breakdown"]
 	path = grade/report/grade_breakdown
 	url = git@github.com:lsuits/grade_breakdown.git
+[submodule "blocks/sgelection"]
+	path = blocks/sgelection
+	url = https://github.com/lsuits/sgelection.git
