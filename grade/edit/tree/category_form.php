@@ -391,7 +391,17 @@ class edit_category_form extends moodleform {
 
             // If it is a course category and its fullname is ?, show an empty field
             if ($grade_category->is_course_category() && $mform->getElementValue('fullname') == '?') {
-                $mform->setDefault('fullname', '');
+                // BEGIN LSU Course Category Editable Patch
+                $editable = (bool) get_config('moodle', 'grade_coursecateditable');
+
+                // If it is a course category and its fullname is ?, show an editable empty field
+                if ($editable && $mform->getElementValue('fullname') == '?') {
+                    $mform->setDefault('fullname', '');
+                } else if (!$editable) {
+                    $mform->setDefault('fullname', $COURSE->fullname);
+                    $mform->hardFreeze('fullname');
+                }
+                // END LSU Course Category Editable Patch
             }
             // remove unwanted aggregation options
             if ($mform->elementExists('aggregation')) {

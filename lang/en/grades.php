@@ -814,6 +814,8 @@ $string['writinggradebookinfo'] = 'Writing gradebook settings';
 $string['xml'] = 'XML';
 $string['yes'] = 'Yes';
 $string['yourgrade'] = 'Your grade';
+$string['coursecateditable'] = 'Course category editable';
+$string['coursecateditable_help'] = 'Disabling will make the course category name an uneditable field.';
 
 // BEGIN LSU Better Letters
 $string['letterscustompercents'] = 'Custom Percentages';
