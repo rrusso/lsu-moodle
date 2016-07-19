@@ -1489,21 +1489,41 @@ class grade_item extends grade_object {
         if ($from == GRADE_AGGREGATE_SUM && $to == GRADE_AGGREGATE_SUM && $this->weightoverride) {
             // Do nothing. We are switching from SUM to SUM and the weight is overriden,
             // a teacher would not expect any change in this situation.
-
         } else if ($from == GRADE_AGGREGATE_WEIGHTED_MEAN && $to == GRADE_AGGREGATE_WEIGHTED_MEAN) {
             // Do nothing. The weights can be kept in this case.
-
         } else if (in_array($from, array(GRADE_AGGREGATE_SUM,  GRADE_AGGREGATE_EXTRACREDIT_MEAN, GRADE_AGGREGATE_WEIGHTED_MEAN2))
                 && in_array($to, array(GRADE_AGGREGATE_SUM,  GRADE_AGGREGATE_EXTRACREDIT_MEAN, GRADE_AGGREGATE_WEIGHTED_MEAN2))) {
-
             // Reset all but the the extra credit field.
             $this->aggregationcoef2 = $defaults['aggregationcoef2'];
-            $this->weightoverride = $defaults['weightoverride'];
+
+            if ($from == GRADE_AGGREGATE_WEIGHTED_MEAN2 && $to == GRADE_AGGREGATE_SUM && $this->aggregationcoef == 1) {
+                $this->weightoverride = 1;
+                $this->aggregationcoef = '1.00000';
+                $this->aggregationcoef2 = '0.00000';
+            } else {
+                $this->weightoverride = $defaults['weightoverride'];
+            }
 
             if ($to != GRADE_AGGREGATE_EXTRACREDIT_MEAN) {
                 // Normalise extra credit, except for 'Mean with extra credit' which supports higher values than 1.
                 $this->aggregationcoef = min(1, $this->aggregationcoef);
             }
+        } else if (($from == GRADE_AGGREGATE_WEIGHTED_MEAN && $to == GRADE_AGGREGATE_SUM) && $this->aggregationcoef <= 0) {
+            $this->weightoverride = 1;
+            $this->aggregationcoef2 = '0.00000';
+            $this->aggregationcoef = '1.00000';
+        } else if (($from == GRADE_AGGREGATE_SUM && $to == GRADE_AGGREGATE_WEIGHTED_MEAN) && ($this->aggregationcoef = 1 && $this->weightoverride == 1)) {
+            $this->aggregationcoef2 = $defaults['aggregationcoef2'];
+            $this->weightoverride = $defaults['weightoverride'];
+            $this->aggregationcoef = '-1.00000';
+        } else if ($from == GRADE_AGGREGATE_WEIGHTED_MEAN && $to == GRADE_AGGREGATE_WEIGHTED_MEAN2 && $this->aggregationcoef <= 0) {
+            $this->aggregationcoef = '1.00000';
+            $this->aggregationcoef2 = $defaults['aggregationcoef2'];
+            $this->weightoverride = '1';
+        } else if ($from == GRADE_AGGREGATE_WEIGHTED_MEAN2 && $to == GRADE_AGGREGATE_WEIGHTED_MEAN && $this->aggregationcoef == 1) {
+            $this->aggregationcoef = $this->aggregationcoef * -1;
+            $this->aggregationcoef2 = $defaults['aggregationcoef2'];
+            $this->weightoverride = '1';
         } else {
             // Reset all.
             $this->aggregationcoef = $defaults['aggregationcoef'];
