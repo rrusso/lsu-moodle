@@ -816,6 +816,8 @@ $string['yes'] = 'Yes';
 $string['yourgrade'] = 'Your grade';
 $string['coursecateditable'] = 'Course category editable';
 $string['coursecateditable_help'] = 'Disabling will make the course category name an uneditable field.';
+$string['droplow_limit'] = 'Drop the lowest limit';
+$string['droplow_limit_help'] = 'By applying this setting, the drop setting will be ignored until the number of droppable grades are > than the drop number.';
 
 // BEGIN LSU Better Letters
 $string['letterscustompercents'] = 'Custom Percentages';

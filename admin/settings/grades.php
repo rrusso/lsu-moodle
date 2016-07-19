@@ -137,6 +137,11 @@ if (has_capability('moodle/grade:manage', $systemcontext)
         $temp->add(new admin_setting_gradecat_combo('grade_droplow', new lang_string('droplow', 'grades'),
                     new lang_string('droplow_help', 'grades'), $defaults, $options));
 
+        $temp->add(new admin_setting_configcheckbox('grade_droplow_limit',
+            new lang_string('droplow_limit', 'grades'),
+            new lang_string('droplow_limit_help', 'grades'), 0)
+        );
+
         $temp->add(new admin_setting_configcheckbox('grade_overridecat', new lang_string('overridecat', 'grades'),
                    new lang_string('overridecat_help', 'grades'), 1));
     }

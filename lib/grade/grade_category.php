@@ -1783,6 +1783,12 @@ class grade_category extends grade_object {
         $isweightedmean = $this->aggregation == GRADE_AGGREGATE_WEIGHTED_MEAN;
 
         if (!empty($this->droplow)) {
+            $limit = (bool)get_config('moodle', 'grade_droplow_limit');
+
+            if ($limit and count($grade_values) <= $this->droplow) {
+                return;
+            }
+
             asort($grade_values, SORT_NUMERIC);
             $dropped = 0;
 
