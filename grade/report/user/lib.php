@@ -516,7 +516,7 @@ class grade_report_user extends grade_report {
                     }
                     $gradecat = $grade_object->load_parent_category();
                     $grandcat = $gradecat->load_parent_category();
-                    if (($gradecat->aggregation == GRADE_AGGREGATE_SUM) && $grade_object->itemtype != 'category') {
+                    if (($gradecat->aggregation == GRADE_AGGREGATE_SUM)) {
                         if ($hint['status'] != 'used' && $hint['status'] != 'unknown') {
                             $data['weight']['content'] .= '<br>' . get_string('aggregationhint' . $hint['status'], 'grades');
                         }
@@ -532,7 +532,7 @@ class grade_report_user extends grade_report {
                             $data['weight']['content'] .= '<br>' . get_string('aggregationhint' . $hint['status'], 'grades');
                         }
                     }
-                    if ($gradecat->aggregation == GRADE_AGGREGATE_WEIGHTED_MEAN2 && $grade_object->aggregationcoef == 1) {
+                    if ($gradecat->aggregation == GRADE_AGGREGATE_WEIGHTED_MEAN2) {
                         if ($hint['status'] != 'used' && $hint['status'] != 'unknown') {
                             $data['weight']['content'] .= '<br>' . get_string('aggregationhint' . $hint['status'], 'grades');
                         }
@@ -540,8 +540,18 @@ class grade_report_user extends grade_report {
                             $data['weight']['content'] = get_string('aggregationhintextra', 'grades');
                         }
                     }
-                    if (($gradecat->aggregation == GRADE_AGGREGATE_WEIGHTED_MEAN || $grandcat->aggregation == GRADE_AGGREGATE_WEIGHTED_MEAN) && $grade_object->itemtype == 'category' && $grade_object->aggregationcoef < 0) {
+                    if (isset($grandcat->aggregation)) {
+                        if (($gradecat->aggregation == GRADE_AGGREGATE_WEIGHTED_MEAN || $grandcat->aggregation == GRADE_AGGREGATE_WEIGHTED_MEAN) && $grade_object->itemtype == 'category') {
+                            if ($grade_object->aggregationcoef < 0) {
+                                $data['weight']['content'] = get_string('aggregationhintextra', 'grades');
+                            } else {
+                                $data['weight']['content'] = format_float($hint['weight'] * 100.0, 2) . ' %';
+                            } 
+                        }
+                    } else {
+                        if ($gradecat->aggregation == GRADE_AGGREGATE_WEIGHTED_MEAN && $grade_object->itemtype == 'category' && $grade_object->aggregationcoef < 0) {
                             $data['weight']['content'] = get_string('aggregationhintextra', 'grades');
+                        }
                     }
                 }
 

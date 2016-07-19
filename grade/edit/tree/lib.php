@@ -716,8 +716,14 @@ class grade_edit_tree_column_weight extends grade_edit_tree_column {
         $categorycell->text = grade_edit_tree::get_weight_input($item);
         $parent_cat = $item->load_parent_category();
         $grandparent_cat = $parent_cat->load_parent_category();
-        if (($parent_cat->aggregation == GRADE_AGGREGATE_SUM && $grandparent_cat->aggregation != GRADE_AGGREGATE_WEIGHTED_MEAN && $item->aggregationcoef == 1 && ($item->aggregationcoef2 == 0 || $item->weightoverride == 1))) {
-            $categorycell->text = get_string('aggregationhintextra', 'grades');
+        if (isset($grandparent_cat->aggregation)) {
+            if (($parent_cat->aggregation == GRADE_AGGREGATE_SUM && $grandparent_cat->aggregation != GRADE_AGGREGATE_WEIGHTED_MEAN && $item->aggregationcoef == 1 && ($item->aggregationcoef2 == 0 || $item->weightoverride == 1))) {
+                $categorycell->text = get_string('aggregationhintextra', 'grades');
+            }
+        } else {
+            if (($parent_cat->aggregation == GRADE_AGGREGATE_SUM && $item->aggregationcoef == 1 && ($item->aggregationcoef2 == 0 || $item->weightoverride == 1))) {
+                $categorycell->text = get_string('aggregationhintextra', 'grades');
+            }
         }
         return $categorycell;
     }
