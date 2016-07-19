@@ -818,6 +818,10 @@ $string['coursecateditable'] = 'Course category editable';
 $string['coursecateditable_help'] = 'Disabling will make the course category name an uneditable field.';
 $string['droplow_limit'] = 'Drop the lowest limit';
 $string['droplow_limit_help'] = 'By applying this setting, the drop setting will be ignored until the number of droppable grades are > than the drop number.';
+$string['manipulatecategories'] = 'Manipulate category totals';
+$string['manipulatecategories_help'] = 'Curve and offset category totals';
+$string['gradeitemmanualrecompute'] = 'Manual item recompute';
+$string['gradeitemmanualrecompute_help'] = 'Allow the gradebook to automatically adjust the raw grade boundaries when editing the real grade boundaries for Manual items.<br /><strong>When enabled, you will have the option of manipulating category totals.</strong>';
 
 // BEGIN LSU Better Letters
 $string['letterscustompercents'] = 'Custom Percentages';

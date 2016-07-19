@@ -1036,6 +1036,11 @@ class grade_report_grader extends grade_report {
 
                 } else if ($USER->gradeediting[$this->courseid]) {
 
+                    // Editing means user edit manual item raw
+                    if ($item->is_manual_item() and $CFG->grade_item_manual_recompute) {
+                        $gradeval = $grade->rawgrade;
+                    }
+
                     if ($item->scaleid && !empty($scalesarray[$item->scaleid])) {
                         $itemcell->attributes['class'] .= ' grade_type_scale';
                     } else if ($item->gradetype == GRADE_TYPE_VALUE) {
