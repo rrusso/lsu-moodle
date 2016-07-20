@@ -682,7 +682,12 @@ class grade_report_grader extends grade_report {
                 $usercell->text = $OUTPUT->user_picture($user, array('visibletoscreenreaders' => false));
             }
 
-            $fullname = fullname($user);
+            if (isset($user->alternatename)) {
+                $fullname = $user->alternatename . ' (' . $user->firstname . ') ' . $user->lastname;
+            } else {
+                $fullname = fullname($user);
+            }
+
             $usercell->text .= html_writer::link(new moodle_url('/user/view.php', array('id' => $user->id, 'course' => $this->course->id)), $fullname, array(
                 'class' => 'username',
             ));
@@ -1878,9 +1883,9 @@ class grade_report_grader extends grade_report {
         $firstlink = html_writer::link(new moodle_url($this->baseurl, array('sortitemid'=>'firstname')), $strfirstname);
         $lastlink = html_writer::link(new moodle_url($this->baseurl, array('sortitemid'=>'lastname')), $strlastname);
 
-        $arrows['studentname'] = $lastlink;
+        $arrows['studentname'] = $firstlink;
 
-        if ($this->sortitemid === 'lastname') {
+        if ($this->sortitemid === 'firstname') {
             if ($this->sortorder == 'ASC') {
                 $arrows['studentname'] .= $iconasc;
             } else {
@@ -1888,9 +1893,9 @@ class grade_report_grader extends grade_report {
             }
         }
 
-        $arrows['studentname'] .= ' ' . $firstlink;
+        $arrows['studentname'] .= '&nbsp;&nbsp;' . $lastlink;
 
-        if ($this->sortitemid === 'firstname') {
+        if ($this->sortitemid === 'lastname') {
             if ($this->sortorder == 'ASC') {
                 $arrows['studentname'] .= $iconasc;
             } else {
