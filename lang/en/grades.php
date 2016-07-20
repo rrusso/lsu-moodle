@@ -824,6 +824,10 @@ $string['gradeitemmanualrecompute'] = 'Manual item recompute';
 $string['gradeitemmanualrecompute_help'] = 'Allow the gradebook to automatically adjust the raw grade boundaries when editing the real grade boundaries for Manual items.<br /><strong>When enabled, you will have the option of manipulating category totals.</strong>';
 $string['w_ec'] = 'Weighted ' . $string['aggregationcoefextra'];
 $string['w_ec_help'] = 'By default, '.$string['aggregationcoefextra'].' items in either the '.$string['aggregateweightedmean2'].' or '.$string['aggregatesum'].' grade categories are weighted. Uncheck this option to allow extra credit items to simply add points to the aggregated category total.';
+$string['privacy_ack'] = 'Student privacy';
+$string['privacy_ack_help'] = 'This setting blocks anyone from downloading student grades without confirming they will comply with all laws and policies regarding student rights.';
+$string['privacy_ack_required'] = 'I understand that I am downloading legally protected student data and will comply with all laws and policies related to the protection of student data.';
+$string['missing_privacy_ack_required'] = 'Please agree to the requirements below before downloading any student data.';
 
 // BEGIN LSU Better Letters
 $string['letterscustompercents'] = 'Custom Percentages';
