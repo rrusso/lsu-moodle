@@ -1152,18 +1152,28 @@ class grade_category extends grade_object {
                 $this->load_grade_item();
                 $weightsum = 0;
                 $sum       = null;
+                $extrasum  = 0;
+
+                $weighted_ec = get_config('moodle', 'grade_w_extra_credit');
 
                 foreach ($grade_values as $itemid=>$grade_value) {
-                    if ($items[$itemid]->aggregationcoef > 0) {
-                        continue;
-                    }
 
                     $weight = $items[$itemid]->grademax - $items[$itemid]->grademin;
                     if ($weight <= 0) {
                         continue;
                     }
 
-                    $weightsum += $weight;
+                    if (!empty($weighted_ec) && $items[$itemid]->aggregationcoef > 0) {
+                        continue;
+                    } else if (empty($weighted_ec) && $items[$itemid]->aggregationcoef > 0) {
+                        $extrasum += ($grade_value / ($this->grade_item->grademax / $items[$itemid]->grademax));
+                        continue;
+                    }
+
+                    if ($items[$itemid]->aggregationcoef <= 0 || !empty($weighted_ec)) {
+                        $weightsum += $weight;
+                    }
+
                     $sum += $weight * $grade_value;
                 }
 
@@ -1181,7 +1191,9 @@ class grade_category extends grade_object {
 
                     $oldsum = $sum;
                     $weightedgrade = $weight * $grade_value;
-                    $sum += $weightedgrade;
+                    if ($items[$itemid]->aggregationcoef <= 0 || !empty($weighted_ec)) {
+                        $sum += $weightedgrade;
+                    }
 
                     if ($weights !== null) {
                         if ($weightsum <= 0) {
@@ -1233,6 +1245,7 @@ class grade_category extends grade_object {
                         }
                     }
                 }
+                $agg_grade += $extrasum;
                 break;
 
             case GRADE_AGGREGATE_EXTRACREDIT_MEAN: // special average
@@ -1421,13 +1434,24 @@ class grade_category extends grade_object {
                 // right values there, and restore them afterwards.
                 $oldgrademax = $this->grade_item->grademax;
                 $oldgrademin = $this->grade_item->grademin;
+                $weighted_ec = get_config('moodle', 'grade_w_extra_credit');
+                $extrasum  = 0;
+                $normalextrasum  = $extrasum;
                 foreach ($grade_values as $itemid => $gradevalue) {
                     if (!isset($extracredititems[$itemid])) {
                         continue;
                     }
                     $oldsum = $sum;
                     $weightedgrade = $gradevalue * $userweights[$itemid] * $grademax;
-                    $sum += $weightedgrade;
+                    if (!empty($weighted_ec)) {
+                        $sum += $weightedgrade;
+                    } else {
+                         if (isset($extracredititems[$itemid])) {
+                            $extrasum += $gradevalue * $userweights[$itemid] * $grademax;
+                         } else {
+                             $sum += $gradevalue;
+                         }
+                    }
 
                     // Only go through this when we need to record the weights.
                     if ($weights !== null) {
@@ -1456,9 +1480,10 @@ class grade_category extends grade_object {
                 }
                 $this->grade_item->grademax = $oldgrademax;
                 $this->grade_item->grademin = $oldgrademin;
-
+                $normalextrasum = ($extrasum / $grademax); // Normalize Extra Credit
                 if ($grademax > 0) {
-                    $agg_grade = $sum / $grademax; // Re-normalize score.
+                    $agg_grade = ($sum / $grademax); // Re-normalize score.
+                    $agg_grade += $normalextrasum; // Add Extra Credit.
                 } else {
                     // Every item in the category is extra credit.
                     $agg_grade = $sum;

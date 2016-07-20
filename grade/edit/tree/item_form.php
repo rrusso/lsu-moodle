@@ -480,6 +480,9 @@ class edit_item_form extends moodleform {
         }
         if ($grade_item) {
             if ($grade_item->gradetype == GRADE_TYPE_VALUE) {
+                if (!isset($data['grademin'])) {
+                    $data['grademin'] = 0;
+                }
                 if (grade_floats_different($data['grademin'], $grade_item->grademin) ||
                     grade_floats_different($data['grademax'], $grade_item->grademax)) {
                     if ($grade_item->has_grades() && empty($data['rescalegrades'])) {

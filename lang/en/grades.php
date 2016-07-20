@@ -822,6 +822,8 @@ $string['manipulatecategories'] = 'Manipulate category totals';
 $string['manipulatecategories_help'] = 'Curve and offset category totals';
 $string['gradeitemmanualrecompute'] = 'Manual item recompute';
 $string['gradeitemmanualrecompute_help'] = 'Allow the gradebook to automatically adjust the raw grade boundaries when editing the real grade boundaries for Manual items.<br /><strong>When enabled, you will have the option of manipulating category totals.</strong>';
+$string['w_ec'] = 'Weighted ' . $string['aggregationcoefextra'];
+$string['w_ec_help'] = 'By default, '.$string['aggregationcoefextra'].' items in either the '.$string['aggregateweightedmean2'].' or '.$string['aggregatesum'].' grade categories are weighted. Uncheck this option to allow extra credit items to simply add points to the aggregated category total.';
 
 // BEGIN LSU Better Letters
 $string['letterscustompercents'] = 'Custom Percentages';
