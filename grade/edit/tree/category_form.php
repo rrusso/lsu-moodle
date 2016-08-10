@@ -536,8 +536,14 @@ class edit_category_form extends moodleform {
                         if ($mform->elementExists('grade_item_aggregationcoef2')) {
                             $mform->removeElement('grade_item_aggregationcoef2');
                         }
-                        if ($mform->elementExists('grade_item_aggregationcoef') && $grade_item->aggregationcoef < 0) {
-                            $mform->removeElement('grade_item_extracred');
+
+                        if ($grade_item->aggregationcoef < 0) {
+                            if ($mform->elementExists('grade_item_aggregationcoef')) {
+                                $mform->removeElement('grade_item_aggregationcoef');
+                            }
+
+                            $mform->addElement('checkbox', 'grade_item_extracred', get_string('aggregationcoefextrasum', 'grades'));
+                            $mform->setDefault('grade_item_extracred', true);
                         }
                     } else {
                         if ($mform->elementExists('grade_item_weightoverride')) {
