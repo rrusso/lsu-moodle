@@ -1321,7 +1321,6 @@ class grade_category extends grade_object {
 
             case GRADE_AGGREGATE_SUM:    // Add up all the items.
                 $this->load_grade_item();
-                $parent_category = $this->load_parent_category();
                 $num = count($grade_values);
                 $sum = 0;
                 $extrasum  = 0;
