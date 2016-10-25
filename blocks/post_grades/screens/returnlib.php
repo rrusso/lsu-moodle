@@ -459,6 +459,7 @@ class post_grades_no_item_return implements post_grades_return_process {
             'grademin' => 1.3,
             'grademax' => 4.0,
             'gradepass' => 1.5,
+            'display' => 1,
             'itemtype' => 'manual',
             'decimals' => 1,
             'itemname' => get_string('finalgrade_item', 'block_post_grades'),

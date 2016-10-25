@@ -65,6 +65,17 @@ class course_settings_form extends moodleform {
         $mform->addElement('select', 'aggregationposition', get_string('aggregationposition', 'grades'), $options);
         $mform->addHelpButton('aggregationposition', 'aggregationposition', 'grades');
 
+        // BEGIN LSU Anonymous Grade settings
+        if (grade_anonymous::is_supported($COURSE) and $can_view_admin_links) {
+            $mform->addElement('text', 'anonymous_adjusts',
+                get_string('anonymousadjusts', 'grades'));
+            $mform->setDefault('anonymous_adjusts', $CFG->grade_anonymous_adjusts);
+            $mform->addHelpButton('anonymous_adjusts', 'anonymousadjusts', 'grades');
+        }
+        // END LSU Anonymous Grade settings
+
+
+
         if ($CFG->grade_minmaxtouse == GRADE_MIN_MAX_FROM_GRADE_ITEM) {
             $default = get_string('gradeitemminmax', 'grades');
         } else if ($CFG->grade_minmaxtouse == GRADE_MIN_MAX_FROM_GRADE_GRADE) {
