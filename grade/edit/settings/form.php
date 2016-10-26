@@ -35,7 +35,7 @@ require_once($CFG->libdir.'/formslib.php');
 class course_settings_form extends moodleform {
 
     function definition() {
-        global $USER, $CFG;
+        global $USER, $CFG, $COURSE;
 
         $mform =& $this->_form;
 
@@ -69,6 +69,7 @@ class course_settings_form extends moodleform {
         if (grade_anonymous::is_supported($COURSE) and $can_view_admin_links) {
             $mform->addElement('text', 'anonymous_adjusts',
                 get_string('anonymousadjusts', 'grades'));
+            $mform->setType('anonymous_adjusts', PARAM_FLOAT);
             $mform->setDefault('anonymous_adjusts', $CFG->grade_anonymous_adjusts);
             $mform->addHelpButton('anonymous_adjusts', 'anonymousadjusts', 'grades');
         }

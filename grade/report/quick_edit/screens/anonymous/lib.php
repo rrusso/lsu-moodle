@@ -77,7 +77,7 @@ class quick_edit_anonymous extends quick_edit_tablelike
     }
 
     public function init($self_item_is_empty = false) {
-        $roleids = explode(',', get_config('moodle', 'gradebookroles'));
+        $graded = get_config('moodle', 'gradebookroles');
 
         if ($self_item_is_empty) {
             return;
@@ -89,7 +89,10 @@ class quick_edit_anonymous extends quick_edit_tablelike
 
         $this->students = array();
 
-        if (COUNT($roleids > 1)) {
+        if (COUNT(explode(',', $graded)) > 1) {
+            $roleids = explode(',', $graded);
+// echo'<br /><br /><br /><br /><br /><br />multi roles: ';
+// print_r(COUNT($roleids));
             foreach ($roleids as $roleid) {
                 $this->students = $this->students + get_role_users(
                     $roleid, $this->context, false, '',
@@ -97,8 +100,10 @@ class quick_edit_anonymous extends quick_edit_tablelike
                 );
             }
         } else {
-            $this->students = get_role_users($roleids, $this->context, false, '',
-                'u.lastname, u.firstname', null, $this->groupid);
+// echo'<br /><br /><br /><br /><br /><br />single roles: ';
+// print_r(COUNT($graded));
+            $this->students = get_role_users($graded, $this->context, false, '',
+                'u.id, u.lastname, u.firstname', null, $this->groupid);
         }
 
         $this->items = $this->item->is_completed() ? $this->students : grade_anonymous::anonymous_users($this->students);
@@ -173,12 +178,6 @@ class quick_edit_anonymous extends quick_edit_tablelike
         $warnings = parent::process($data);
 
         $anon = $this->item;
-
-$warnings[] = 'test';
-
-echo'<br /><br />Warnings: ';
-print_r($warnings);
-echo'<br />';
 
         if (empty($warnings) and !$anon->is_completed()) {
             $anon->set_completed($anon->check_completed($this->students));
