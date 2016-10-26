@@ -435,7 +435,7 @@ class post_grades_no_item_return implements post_grades_return_process {
                 'id' => $this->course->id
             ));
         } else {
-            return new moodle_url('/grade/report/quick_edit/index.php', array(
+            return new moodle_url('/grade/report/singleview/index.php', array(
                 'id' => $this->course->id,
                 'itemid' => $processed->id,
                 'item' => 'grade'
