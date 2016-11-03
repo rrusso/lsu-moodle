@@ -88,22 +88,25 @@ class quick_edit_anonymous extends quick_edit_tablelike
         $mainuserfields = user_picture::fields('u', array('id'), 'userid');
 
         $this->students = array();
+        $this->coursestudents = array();
 
         if (COUNT(explode(',', $graded)) > 1) {
             $roleids = explode(',', $graded);
-// echo'<br /><br /><br /><br /><br /><br />multi roles: ';
-// print_r(COUNT($roleids));
             foreach ($roleids as $roleid) {
                 $this->students = $this->students + get_role_users(
                     $roleid, $this->context, false, '',
                     'u.id, u.lastname, u.firstname', null, $this->groupid
                 );
+                $this->coursestudents = $this->coursestudents + get_role_users(
+                    $roleid, $this->context, false, '',
+                    'u.id, u.lastname, u.firstname', null, '0'
+                );
             }
         } else {
-// echo'<br /><br /><br /><br /><br /><br />single roles: ';
-// print_r(COUNT($graded));
             $this->students = get_role_users($graded, $this->context, false, '',
                 'u.id, u.lastname, u.firstname', null, $this->groupid);
+            $this->coursestudents = get_role_users($graded, $this->context, false, '',
+                'u.id, u.lastname, u.firstname', null, '0');
         }
 
         $this->items = $this->item->is_completed() ? $this->students : grade_anonymous::anonymous_users($this->students);
@@ -180,7 +183,7 @@ class quick_edit_anonymous extends quick_edit_tablelike
         $anon = $this->item;
 
         if (empty($warnings) and !$anon->is_completed()) {
-            $anon->set_completed($anon->check_completed($this->students));
+            $anon->set_completed($anon->check_completed($this->coursestudents, $this->students));
         }
 
         return $warnings;
