@@ -91,24 +91,20 @@ class grade_anonymous extends grade_object {
         }
     }
 
-    public function check_completed($real_users) {
+    public function check_completed($course_users, $graded_users) {
         global $DB;
 
-        $anon_users = $this->anonymous_users($real_users);
-
-        $real_count = count($real_users);
-
-        if (count($anon_users) != $real_count) {
-            return false;
-        }
-
-        $userids = implode(',', array_keys($real_users));
-        $select = 'userid IN (' . $userids . ') AND anonymous_itemid = :itemid';
+        $anon_users = $this->anonymous_users($graded_users);
+        $course_count = count($course_users);
+        $userids = implode(',', array_keys($course_users));
+        $select = 'userid IN (' . $userids . ') AND anonymous_itemid = :itemid AND finalgrade IS NOT NULL AND finalgrade <> ""';
         $params = array('itemid' => $this->id);
-
         $count = $DB->count_records_select('grade_anon_grades', $select, $params);
 
-        return $real_count == $count;
+        if (count($anon_users) != $count) {
+            return false;
+        }
+        return $course_count == $count;
     }
 
     public function is_completed() {

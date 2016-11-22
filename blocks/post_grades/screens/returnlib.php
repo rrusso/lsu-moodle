@@ -540,6 +540,7 @@ class post_grades_no_anonymous_item_return extends post_grades_no_item_return {
         return new moodle_url('/grade/report/quick_edit/index.php', array(
             'id' => $this->course->id,
             'item' => 'anonymous',
+            'group' => required_param('group', PARAM_INT),
             'itemid' => $processed->itemid
         ));
     }

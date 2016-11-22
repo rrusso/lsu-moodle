@@ -879,6 +879,7 @@ class grade_report_grader extends grade_report {
                              $url = new moodle_url($path, array(
                                  'id' => $this->course->id,
                                  'item' => $is_anon ? 'anonymous' : 'grade',
+                                 'group' => $this->currentgroup,
                                  'itemid' => $element['object']->id));
                             $singleview = $OUTPUT->action_icon(
                                 $url,
