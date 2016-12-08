@@ -35,10 +35,17 @@ function getCategories() {
 
 /**
  * Fetches all grade item input HTML elements from forecast form
+ *
+ * Optionally returns a given input type, "scale-selects", defaults to all "dynamic-item" classed-items
  * 
+ * @param string  type  values(default)|scale-selects
  * @return object
  */
-function getGradeInputs() {
+function getGradeInputs(type = 'values') {
+    if (type == 'scale-selects') {
+        return getElementsByType('dynamic-scale-item');
+    }
+    
     return getElementsByType('dynamic-item');
 }
 
@@ -201,13 +208,64 @@ function collectFormInput() {
  * 
  * @return void
  */
-function listenForInputChanges() {
-    getGradeInputs().keyup(function(event) {
-        handleInputChange(event);
+function listenForInputChanges(debounceWaitTime = 1000) {
 
-        return;
+    // validate grade (text) input on @keyup
+    getGradeInputs('values').keyup(function(event) {
+        handleInputChange(event);
     });
+
+    // create single invokation for debouncing
+    var debouncedPostGradeInputs = function() {
+        postGradeInputs();
+    }
+
+    // post grade inputs for calculation on grade (text) input @keyup
+    getGradeInputs('values').keyup(debounce(debouncedPostGradeInputs, debounceWaitTime));
+
+    // post grade inputs for calculation on grade (scale selects) input @keyup
+    getGradeInputs('scale-selects').change(debounce(debouncedPostGradeInputs, debounceWaitTime));
 }
+
+/**
+ * Throttles/compresses the call of a given function for a given "wait" time of milliseconds
+ * 
+ * Optionally executes the function with no delay
+ * 
+ * @param  function
+ * @param  int       wait        number of milliseconds to wait
+ * @return function
+ */
+function debounce(func, wait) {
+    var timeout, args, context, timestamp;
+
+    return function() {
+        // save details of latest call
+        context = this;
+        args = [].slice.call(arguments, 0);
+        timestamp = new Date();
+
+        var later = function() {
+            // how long ago was the last call
+            var last = (new Date()) - timestamp;
+
+            // if the latest call was less that the wait period ago then we reset the timeout to wait for the difference
+            if (last < wait) {
+                timeout = setTimeout(later, wait - last);
+
+            // or if not we can null out the timer and run the latest
+            } else {
+                timeout = null;
+                func.apply(context, args);
+            }
+        };
+
+        // we only need to set the timer now if one isn't already running
+        if ( ! timeout) {
+            timeout = setTimeout(later, wait);
+        }
+    }
+};
 
 /**
  * Event handler: validates input and refreshes report totals based on form input
@@ -222,12 +280,6 @@ function handleInputChange(event) {
 
     hideGradeError(event.currentTarget, 'invalid');
     hideGradeError(event.currentTarget, 'range');
-
-    if (inputErrorsExist()) {
-        return;
-    }
-
-    postGradeInputs();
 }
 
 /**
@@ -299,9 +351,20 @@ function updateCourseTotal(value) {
  * @return void
  */
 function postGradeInputs() {
+    if (inputErrorsExist())
+        return false;
+
     var inputs = collectFormInput();
 
+    getCategories().each(function() {
+        $(this).html('<img class="transparent" src="assets/frspinner.svg">');
+    });
+
+    getCourseCategory().html('<img class="transparent" src="assets/frspinner.svg">');
+
     $.post('io.php', inputs, function(data) {
+        console.log('posting forecast grade input');
+        
         var response = JSON.parse(data);
         
         handleGradeInputResponse(response);
@@ -337,9 +400,3 @@ function renderMustMakeModal(values) {
 function handleGradeInputResponse(response) {
     updateTotals(response);
 }
-
-//////////////////////////////////////////////////////////////////////////////
-
-$(document).ready(function() {
-    listenForInputChanges();
-});
