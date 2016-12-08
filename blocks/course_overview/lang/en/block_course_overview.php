@@ -65,3 +65,6 @@ $string['view_edit_profile'] = '(View and edit your profile.)';
 $string['welcome'] = 'Welcome {$a}';
 $string['youhavemessages'] = 'You have {$a} unread ';
 $string['youhavenomessages'] = 'You have no unread ';
+$string['showcaslinks'] = 'Show C.A.S. links';
+$string['showcaslinksdesc'] = 'Show Center for Academic Success links to students in the course. These links are customized via the key/values defined in constants.php.';
+$string['helplinks'] = 'Center for Academic Success Links';

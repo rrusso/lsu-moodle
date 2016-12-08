@@ -41,10 +41,8 @@ class block_course_overview_renderer extends plugin_renderer_base {
     public function course_overview($courses, $overviews) {
         $html = '';
         $config = get_config('block_course_overview');
-        if ($config->showcategories != BLOCKS_COURSE_OVERVIEW_SHOWCATEGORIES_NONE) {
-            global $CFG;
-            require_once($CFG->libdir.'/coursecatlib.php');
-        }
+        global $CFG;
+        require_once($CFG->libdir.'/coursecatlib.php');
         $ismovingcourse = false;
         $courseordernumber = 0;
         $maxcourses = count($courses);
@@ -112,6 +110,19 @@ class block_course_overview_renderer extends plugin_renderer_base {
                 $coursefullname = format_string(get_course_display_name_for_list($course), true, $course->id);
                 $link = html_writer::link($courseurl, $coursefullname, $attributes);
                 $html .= $this->output->heading($link, 2, 'title');
+                // Add CAS links
+                $coursecontext = context_course::instance($course->id);
+                if ($config->showcaslinks && !has_capability('moodle/course:enrolreview', $coursecontext)) {
+                    require_once('constants.php');
+                    $cc = coursecat::get($course->category, IGNORE_MISSING);
+                    $ccname = $cc->get_formatted_name();
+                    $help = get_string('help', 'moodle');
+                    if (defined($ccname)) {
+                        $html .= '<a class="btn cas_help" href="' . constant($ccname) . '" target="_blank">' . $ccname . ' ' . $help . '</a>';
+                    } else {
+                        $html .= '<a class="btn cas_help" href="http://students.lsu.edu/academicsuccess/studying" target="_blank">' . $help . '</a>';
+                    }
+                }
             } else {
                 $html .= $this->output->heading(html_writer::link(
                     new moodle_url('/auth/mnet/jump.php', array('hostid' => $course->hostid, 'wantsurl' => '/course/view.php?id='.$course->remoteid)),
