@@ -111,18 +111,12 @@ class block_course_overview_renderer extends plugin_renderer_base {
                 $link = html_writer::link($courseurl, $coursefullname, $attributes);
                 $html .= $this->output->heading($link, 2, 'title');
                 // Add CAS links
-                $coursecontext = context_course::instance($course->id);
-                if ($config->showcaslinks && !has_capability('moodle/course:enrolreview', $coursecontext)) {
-                    require_once('constants.php');
-                    $cc = coursecat::get($course->category, IGNORE_MISSING);
-                    $ccname = $cc->get_formatted_name();
-                    $help = get_string('help', 'moodle');
-                    if (defined($ccname)) {
-                        $html .= '<a class="btn cas_help" href="' . constant($ccname) . '" target="_blank">' . $ccname . ' ' . $help . '</a>';
-                    } else {
-                        $html .= '<a class="btn cas_help" href="http://students.lsu.edu/academicsuccess/studying" target="_blank">' . $help . '</a>';
-                    }
-                }
+                if (class_exists('local_cas_help_links_url_generator')) {
+                    $help_url_array = \local_cas_help_links_url_generator::getUrlArrayForCourse($course);
+                    if ($help_url_array['display']) {
+                        $html .= '<a class="btn cas_help" href="' . $help_url_array['url'] . '" target="_blank">' . $help_url_array['label'] . '</a>';
+                     }
+                 }
             } else {
                 $html .= $this->output->heading(html_writer::link(
                     new moodle_url('/auth/mnet/jump.php', array('hostid' => $course->hostid, 'wantsurl' => '/course/view.php?id='.$course->remoteid)),
