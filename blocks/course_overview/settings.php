@@ -39,8 +39,4 @@ if ($ADMIN->fulltree) {
     );
     $settings->add(new admin_setting_configselect('block_course_overview/showcategories', new lang_string('showcategories', 'block_course_overview'),
         new lang_string('showcategoriesdesc', 'block_course_overview'), BLOCKS_COURSE_OVERVIEW_SHOWCATEGORIES_NONE, $showcategories));
-        $settings->add(
-                new admin_setting_heading('block_course_overview/heading', new lang_string('helplinks', 'block_course_overview'), NULL));
-    $settings->add(new admin_setting_configcheckbox('block_course_overview/showcaslinks', new lang_string('showcaslinks', 'block_course_overview'),
-        new lang_string('showcaslinksdesc', 'block_course_overview'), 1, PARAM_INT));
 }

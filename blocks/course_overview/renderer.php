@@ -41,8 +41,10 @@ class block_course_overview_renderer extends plugin_renderer_base {
     public function course_overview($courses, $overviews) {
         $html = '';
         $config = get_config('block_course_overview');
-        global $CFG;
-        require_once($CFG->libdir.'/coursecatlib.php');
+        if ($config->showcategories != BLOCKS_COURSE_OVERVIEW_SHOWCATEGORIES_NONE) {
+            global $CFG;
+            require_once($CFG->libdir.'/coursecatlib.php');
+        }
         $ismovingcourse = false;
         $courseordernumber = 0;
         $maxcourses = count($courses);
