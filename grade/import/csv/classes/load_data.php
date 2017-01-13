@@ -158,11 +158,17 @@ class gradeimport_csv_load_data {
         $record->importcode = $this->importcode;
         $record->userid     = $studentid;
         $record->importer   = $USER->id;
-        // By default the maximum grade is 100.
+
         $gradepointmaximum = 100;
-        // If the grade limit has been increased then use the gradepointmax setting.
-        if ($CFG->unlimitedgrades) {
+        // If unlimited grades is selected and the grade limit has been increased then use the gradepointmax setting.
+        if ($CFG->unlimitedgrades && ($CFG->gradepointmax > $CFG->gradepointdefault)) {
             $gradepointmaximum = $CFG->gradepointmax;
+        // If unlimited grades is selected and the grade limit has not been increased then use an absurdly high setting.
+        } else if ($CFG->unlimitedgrades) {
+            $gradepointmaximum = ($CFG->gradepointdefault * $CFG->gradepointdefault);
+        // If unlimited grades are not set, set this to the moodle default.
+        } else {
+            $gradepointmaximum = $CFG->gradepointdefault;
         }
         // If the record final grade is set then check that the grade value isn't too high.
         // Final grade will not be set if we are inserting feedback.
