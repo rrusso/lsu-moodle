@@ -36,6 +36,7 @@ class local_cas_help_links_url_generator {
      */
     public static function getUrlForUser($user_id) {
         global $CFG;
+        require_once $CFG->dirroot . '/blocks/cps/classes/lib.php';
         // if this plugin is disabled, do not display
         if ( ! \local_cas_help_links_utility::isPluginEnabled())
             return self::getEmptyHelpUrlArray();
@@ -44,7 +45,7 @@ class local_cas_help_links_url_generator {
         if (\ues_user::is_teacher($user_id)) {
             // return edit link
             return self::getCourseEditHelpUrl();
-        } else if (has_capability('local/cas_help_links:editglobalsettings', context_system::instance())) {
+        } else if (has_capability('local/cas_help_links:editcategorysettings', context_system::instance())) {
             return self::getCategoryEditHelpUrl(); 
         } else {
             //  otherwise rdo not display
