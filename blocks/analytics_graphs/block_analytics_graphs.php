@@ -23,6 +23,9 @@ class block_analytics_graphs extends block_base {
     // The PHP tag and the curly bracket for the class definition
     // will only be closed after there is another function added in the next section.
 
+    function applicable_formats() {
+        return array('site' => false, 'my' => false, 'course-view' => true);
+    }
 
     public function get_content() {
         global $CFG;

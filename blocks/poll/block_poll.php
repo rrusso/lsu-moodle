@@ -34,6 +34,10 @@ class block_poll extends block_base {
         $this->version = 2015031700;
     }
 
+    function applicable_formats() {
+        return array('site' => false, 'my' => false, 'course-view' => true);
+    }
+
     public function instance_allow_config() {
         return true;
     }
