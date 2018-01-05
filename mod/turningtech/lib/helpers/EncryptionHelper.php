@@ -26,9 +26,9 @@
 
 require_once($CFG->dirroot . '/mod/turningtech/locallib.php');
 if (isset($CFG->turningtech_encryption_format) && $CFG->turningtech_encryption_format == TURNINGTECH_ENCRYPTION_FORMAT_ECB) {
-    define('TURNINGTECH_ENCRYPTION_FORMAT', MCRYPT_MODE_ECB);
+    define('TURNINGTECH_ENCRYPTION_FORMAT', 'MCRYPT_MODE_ECB');
 } else {
-    define('TURNINGTECH_ENCRYPTION_FORMAT', MCRYPT_MODE_CBC);
+    define('TURNINGTECH_ENCRYPTION_FORMAT', 'MCRYPT_MODE_CBC');
 }
 
 /**
