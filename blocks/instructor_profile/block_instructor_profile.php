@@ -37,27 +37,18 @@ class block_instructor_profile extends block_base {
         $needed_roles = get_roles_with_cap_in_context($context, 'moodle/course:update');
         $roles = reset($needed_roles);
 
-        if (!$username = $DB->get_record('block_instructor_profile', $params)) {
-        $username = new stdClass();
-        $username->username = '';
-        }
-
         foreach ($roles as $role) {
             $users = get_role_users($role, $context);
+
             if (!empty($users)) {
-                foreach ($users as $puser) {
-                    if ($puser->username == $username->username) {
-                        $user = $puser;
-                    }
-                }
+                $user = reset($users);
+                break;
             }
         }
 
         // No Instructor was found at this context
-        if (empty($puser)) {
+        if (empty($user)) {
             return $this->content;
-        } else if (empty($user)) {
-            $user = $puser;
         }
 
         if (!$profile = $DB->get_record('block_instructor_profile', $params)) {
