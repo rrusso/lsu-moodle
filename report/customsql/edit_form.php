@@ -22,6 +22,8 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once($CFG->libdir . '/formslib.php');
 require_once(dirname(__FILE__) . '/locallib.php');
 
@@ -40,7 +42,7 @@ class report_customsql_edit_form extends moodleform {
         $mform->addElement('text', 'displayname', get_string('displayname', 'report_customsql'));
         $mform->addRule('displayname', get_string('displaynamerequired', 'report_customsql'),
                         'required', null, 'client');
-        $mform->setType('displayname', PARAM_MULTILANG);
+        $mform->setType('displayname', PARAM_TEXT);
 
         $mform->addElement('editor', 'description',
                 get_string('description', 'report_customsql'));
@@ -203,7 +205,7 @@ class report_customsql_edit_form extends moodleform {
         }
 
         // Check querylimit in range 1 .. REPORT_CUSTOMSQL_MAX_RECORDS.
-        if (empty($data['querylimit']) || $data['querylimit'] > REPORT_CUSTOMSQL_MAX_RECORDS) {
+        if (empty($data['querylimit'])) {
             $errors['querylimit'] = get_string('querylimitrange', 'report_customsql', REPORT_CUSTOMSQL_MAX_RECORDS);
         }
 
