@@ -33,6 +33,42 @@ class mod_lib_testcase extends test_lib {
     }
 
     /**
+     * Test that we have the correct repository depending on the config settings.
+     */
+    public function test_turnitintooltwo_override_repository() {
+        $this->resetAfterTest();
+
+        // Note that $submitpapersto would only ever be 0, 1 or 2 but this is to illustrate
+        // that it won't be overridden by the turnitintooltwo_override_repository method.
+        $submitpapersto = 6;
+
+        // Test that repository is not overridden for value of 0.
+        set_config('repositoryoption', ADMIN_REPOSITORY_OPTION_STANDARD, 'turnitintooltwo');
+        $response = turnitintooltwo_override_repository($submitpapersto);
+        $this->assertEquals($response, $submitpapersto);
+
+        // Test that repository is not overridden for value of 1.
+        set_config('repositoryoption', ADMIN_REPOSITORY_OPTION_EXPANDED, 'turnitintooltwo');
+        $response = turnitintooltwo_override_repository($submitpapersto);
+        $this->assertEquals($response, $submitpapersto);
+
+        // Standard Repository is being forced.
+        set_config('repositoryoption', ADMIN_REPOSITORY_OPTION_FORCE_STANDARD, 'turnitintooltwo');
+        $response = turnitintooltwo_override_repository($submitpapersto);
+        $this->assertEquals($response, SUBMIT_TO_STANDARD_REPOSITORY);
+
+        // No Repository is being forced.
+        set_config('repositoryoption', ADMIN_REPOSITORY_OPTION_FORCE_NO, 'turnitintooltwo');
+        $response = turnitintooltwo_override_repository($submitpapersto);
+        $this->assertEquals($response, SUBMIT_TO_NO_REPOSITORY);
+
+        // Institutional Repository is being forced.
+        set_config('repositoryoption', ADMIN_REPOSITORY_OPTION_FORCE_INSTITUTIONAL, 'turnitintooltwo');
+        $response = turnitintooltwo_override_repository($submitpapersto);
+        $this->assertEquals($response, SUBMIT_TO_INSTITUTIONAL_REPOSITORY);
+    }
+
+    /**
      * Test that the cron processes gradebook migrations.
      */
     public function test_turnitintooltwo_cron_migrate_gradebook() {
@@ -129,7 +165,7 @@ class mod_lib_testcase extends test_lib {
 
         turnitintooltwo_cron_migrate_gradebook();
 
-        /** 
+        /**
          * Test that we migrate the gradebook when using the cron workflow.
          * There should be 400 grades that require a migration afterwards since migrating the third assignment would take us over 1000.
          */
@@ -232,5 +268,104 @@ class mod_lib_testcase extends test_lib {
 	    $result = turnitintooltwo_get_report_gen_speed_params();
 
 	    $this->assertEquals($expected, $result);
+    }
+
+    public function test_turnitintooltwo_availability_status() {
+        global $DB;
+
+        $this->resetAfterTest();
+
+        $this->setAdminUser();
+
+        // Create a course and assignment.
+        $course = $this->getDataGenerator()->create_course();
+
+        $turnitintooltwoassignment = $this->make_test_tii_assignment();
+        $cmid = $this->make_test_module($turnitintooltwoassignment->turnitintooltwo->course,'turnitintooltwo', $turnitintooltwoassignment->turnitintooltwo->id);
+        $context = context_module::instance($cmid);
+        $cm = $DB->get_record("course_modules", array('id' => $cmid));
+
+        // Set to the student user.
+        $generator = $this->getDataGenerator();
+
+        // Create users.
+        $student = self::getDataGenerator()->create_user();
+        $teacher = self::getDataGenerator()->create_user();
+
+        // Users enrolments.
+        $studentrole = $DB->get_record('role', array('shortname' => 'student'));
+        $teacherrole = $DB->get_record('role', array('shortname' => 'editingteacher'));
+        $this->getDataGenerator()->enrol_user($student->id, $course->id, $studentrole->id, 'manual');
+        $this->getDataGenerator()->enrol_user($teacher->id, $course->id, $teacherrole->id, 'manual');
+
+        self::setUser($student);
+
+        // Create data object for passing in.
+        $data = new stdClass();
+        $data->id = $cm->instance;
+        $data->timeclose = 0;
+        $data->timeopen = 0;
+
+        // Usual case.
+        list($status, $warnings) = mod_turnitintooltwo_get_availability_status($data, false);
+        $this->assertEquals(true, $status);
+        $this->assertCount(0, $warnings);
+
+        // Turnitintooltwo not open.
+        $data->timeopen = time() + DAYSECS;
+        list($status, $warnings) = mod_turnitintooltwo_get_availability_status($data, false);
+        $this->assertEquals(false, $status);
+        $this->assertArrayHasKey('notopenyet', $warnings);
+
+        // Turnitintooltwo closed.
+        $data->timeopen = 0;
+        $data->timeclose = time() - DAYSECS;
+        list($status, $warnings) = mod_turnitintooltwo_get_availability_status($data, false);
+        $this->assertEquals(false, $status);
+        $this->assertArrayHasKey('expired', $warnings);
+
+        // Turnitintooltwo not open and closed.
+        $data->timeopen = time() + DAYSECS;
+        list($status, $warnings) = mod_turnitintooltwo_get_availability_status($data, false);
+        $this->assertEquals(false, $status);
+        $this->assertArrayHasKey('notopenyet', $warnings);
+        $this->assertArrayHasKey('expired', $warnings);
+
+        // Now additional checkings with different parameters values.
+        list($status, $warnings) = mod_turnitintooltwo_get_availability_status($data, true, $context);
+        $this->assertEquals(false, $status);
+        $this->assertArrayHasKey('notopenyet', $warnings);
+        $this->assertArrayHasKey('expired', $warnings);
+
+        // Turnitintooltwo not open.
+        $data->timeopen = time() + DAYSECS;
+        $data->timeclose = 0;
+        list($status, $warnings) = mod_turnitintooltwo_get_availability_status($data, true, $context);
+        $this->assertEquals(false, $status);
+        $this->assertArrayHasKey('notopenyet', $warnings);
+
+        // Turnitintooltwo closed.
+        $data->timeopen = 0;
+        $data->timeclose = time() - DAYSECS;
+        list($status, $warnings) = mod_turnitintooltwo_get_availability_status($data, true, $context);
+        $this->assertEquals(false, $status);
+        $this->assertArrayHasKey('expired', $warnings);
+
+        // Turnitintooltwo not open and closed.
+        $data->timeopen = time() + DAYSECS;
+        list($status, $warnings) = mod_turnitintooltwo_get_availability_status($data, true, $context);
+        $this->assertEquals(false, $status);
+        $this->assertArrayHasKey('notopenyet', $warnings);
+        $this->assertArrayHasKey('expired', $warnings);
+
+        // As teacher now.
+        self::setUser($teacher);
+
+        // Turnitintooltwo not open and closed.
+        $data->timeopen = time() + DAYSECS;
+        list($status, $warnings) = mod_turnitintooltwo_get_availability_status($data, false);
+        $this->assertEquals(false, $status);
+        $this->assertArrayHasKey('notopenyet', $warnings);
+        $this->assertArrayHasKey('expired', $warnings);
     }
 }

@@ -33,12 +33,23 @@ define('TURNITINTOOLTWO_DEFAULT_PSEUDO_DOMAIN', '@tiimoodle.com');
 define('TURNITINTOOLTWO_DEFAULT_PSEUDO_FIRSTNAME', get_string('defaultcoursestudent'));
 define('TURNITINTOOLTWO_SUBMISSION_GET_LIMIT', 100);
 define('TURNITINTOOLTWO_MAX_FILENAME_LENGTH', 180);
-define('TURNITIN_SUPPORT_FORM', 'http://turnitin.com/self-service/support-form.html');
 define('TURNITIN_COURSE_TITLE_LIMIT', 300);
 define('TURNITIN_ASSIGNMENT_TITLE_LIMIT', 300);
 define('MIGRATION_SUBMISSIONS_CUTOFF', 1000);
 define('REPORT_GEN_SPEED_NUM_RESUBMISSIONS', 3);
 define('REPORT_GEN_SPEED_NUM_HOURS', 24);
+
+// Admin Repository constants.
+define('ADMIN_REPOSITORY_OPTION_STANDARD', 0);
+define('ADMIN_REPOSITORY_OPTION_EXPANDED', 1);
+define('ADMIN_REPOSITORY_OPTION_FORCE_STANDARD', 2);
+define('ADMIN_REPOSITORY_OPTION_FORCE_NO', 3);
+define('ADMIN_REPOSITORY_OPTION_FORCE_INSTITUTIONAL', 4);
+
+// Submit Papers to Repository constants.
+define('SUBMIT_TO_NO_REPOSITORY', 0);
+define('SUBMIT_TO_STANDARD_REPOSITORY', 1);
+define('SUBMIT_TO_INSTITUTIONAL_REPOSITORY', 2);
 
 // For use in course migration.
 $tiiintegrationids = array(0 => get_string('nointegration', 'turnitintooltwo'), 1 => 'Blackboard Basic',
@@ -1189,7 +1200,7 @@ function turnitintooltwo_sort_array(&$data, $sortcol, $sortdir) {
 }
 
 /**
- * Get files for displaying in settings. Called from ajax.php via turnitintooltwo.min.js.
+ * Get files for displaying in settings. Called from ajax.php via turnitintooltwo-2018082301.min.js.
  *
  * @param  $moduleid the id of the module to return files for
  * @global type $DB
@@ -1372,7 +1383,7 @@ function turnitintooltwo_pluginfile($course,
 }
 
 /**
- * Get users for unlinking/relinking. Called from ajax.php via turnitintooltwo.min.js.
+ * Get users for unlinking/relinking. Called from ajax.php via turnitintooltwo-2018082301.min.js.
  *
  * @global type $DB
  * @return array return array of users to display
@@ -1790,4 +1801,92 @@ function turnitintooltwo_get_report_gen_speed_params() {
     $genparams->num_hours = REPORT_GEN_SPEED_NUM_HOURS;
 
     return $genparams;
+}
+
+/**
+ * Override the repository option if necessary depending on the configuration setting.
+ * @param $submitpapersto int - The repository to submit to.
+ * @return $submitpapersto int - The repository to submit to.
+ */
+function turnitintooltwo_override_repository($submitpapersto) {
+    $config = turnitintooltwo_admin_config();
+
+    switch ($config->repositoryoption) {
+        case ADMIN_REPOSITORY_OPTION_FORCE_STANDARD; // Force Standard Repository.
+            $submitpapersto = SUBMIT_TO_STANDARD_REPOSITORY;
+            break;
+        case ADMIN_REPOSITORY_OPTION_FORCE_NO; // Force No Repository.
+            $submitpapersto = SUBMIT_TO_NO_REPOSITORY;
+            break;
+        case ADMIN_REPOSITORY_OPTION_FORCE_INSTITUTIONAL; // Force Individual Repository.
+            $submitpapersto = SUBMIT_TO_INSTITUTIONAL_REPOSITORY;
+            break;
+    }
+
+    return $submitpapersto;
+}
+
+/**
+ * This function receives a calendar event and returns the action associated with it, or null if there is none.
+ *
+ * This is used by block_myoverview in order to display the event appropriately. If null is returned then the event
+ * is not displayed on the block.
+ *
+ * @param calendar_event $event
+ * @param \core_calendar\action_factory $factory
+ * @return \core_calendar\local\event\entities\action_interface|null
+ */
+function mod_turnitintooltwo_core_calendar_provide_event_action(calendar_event $event,
+                                                                \core_calendar\action_factory $factory) {
+    $cm = get_fast_modinfo($event->courseid)->instances['turnitintooltwo'][$event->instance];
+
+    if (!empty($cm->customdata['timeclose']) && $cm->customdata['timeclose'] < time()) {
+        // The assignment has closed so the user can no longer submit anything.
+        return null;
+    }
+
+    // Restore object from cached values in $cm, we only need id, timeclose and timeopen.
+    $customdata = $cm->customdata ?: [];
+    $customdata['id'] = $cm->instance;
+    $data = (object)($customdata + ['timeclose' => 0, 'timeopen' => 0]);
+
+    // Check that the activity is open.
+    list($actionable, $warnings) = mod_turnitintooltwo_get_availability_status($data, true, context_module::instance($cm->id));
+
+    $identifier = (has_capability('mod/turnitintooltwo:grade', context_module::instance($cm->id))) ? 'allsubmissions' : 'addsubmission';
+    return $factory->create_instance(
+        get_string($identifier, 'turnitintooltwo'),
+        new \moodle_url('/mod/turnitintooltwo/view.php', array('id' => $cm->id)),
+        1,
+        $actionable
+    );
+}
+
+/**
+ * Check if an activity is available for the current user.
+ *
+ * @param  stdClass  $data             Availability data
+ * @param  boolean $checkcapability    Check the mod/turnitintooltwo:read cap
+ * @param  stdClass  $context          Module context, required if $checkcapability is set to true
+ * @return array                       status (available or not and possible warnings)
+ */
+function mod_turnitintooltwo_get_availability_status($data, $checkcapability = false, $context = null) {
+    $open = true;
+    $warnings = array();
+
+    $timenow = time();
+    if (!empty($data->timeopen) && $data->timeopen > $timenow) {
+        $open = false;
+        $warnings['notopenyet'] = userdate($data->timeopen);
+    }
+    if (!empty($data->timeclose) && $timenow > $data->timeclose) {
+        $open = false;
+        $warnings['expired'] = userdate($data->timeclose);
+    }
+
+    if ($checkcapability && !empty($context) && has_capability('mod/turnitintooltwo:read', $context)) {
+        return array(true, $warnings);
+    }
+
+    return array($open, $warnings);
 }
