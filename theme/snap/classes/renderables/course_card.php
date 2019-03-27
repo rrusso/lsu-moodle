@@ -138,6 +138,9 @@ class course_card implements \renderable {
         $togglestrkey = !$this->favorited ? 'favorite' : 'favorited';
         $this->toggletitle = get_string($togglestrkey, 'theme_snap', $this->fullname);
         $this->apply_contact_avatars();
+        if (class_exists('local_cas_help_links_button_renderer')) {
+            $this->apply_cas_links($this->course);
+        }
         $this->apply_image_css();
     }
 
@@ -208,6 +211,14 @@ class course_card implements \renderable {
             $this->hiddenavatars = [];
         }
         $this->hiddenavatarcount = count($this->hiddenavatars);
+    }
+
+    /**
+     * Add CAS help links.
+     */
+    private function apply_cas_links($course) {
+        $caslink = \local_cas_help_links_button_renderer::get_html_for_snap($course);
+        $this->caslink = $caslink;
     }
 
     /**
