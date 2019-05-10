@@ -15,38 +15,43 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * the provision course logic for panopto
+ * the provision course logic for Panopto
  *
  * @package block_panopto
  * @copyright  Panopto 2009 - 2016 /With contributions from Spenser Jones (sjones@ambrose.edu)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+global $CFG;
+if (empty($CFG)) {
+    require_once(dirname(__FILE__) . '/../../config.php');
+}
 
-require_once(dirname(__FILE__) . '/../../config.php');
 require_once($CFG->libdir . '/formslib.php');
-require_once('lib/panopto_data.php');
+require_once(dirname(__FILE__) . '/lib/panopto_data.php');
+require_once(dirname(__FILE__) . '/lib/block_panopto_lib.php');
 
 global $courses;
 
 // Populate list of servernames to select from.
 $aserverarray = array();
 $appkeyarray = array();
-if (isset($_SESSION['numservers'])) {
-    $maxval = $_SESSION['numservers'];
-} else {
-    $maxval = 1;
-}
 
-for ($x = 0; $x < $maxval; $x++) {
+$numservers = get_config('block_panopto', 'server_number');
+$numservers = isset($numservers) ? $numservers : 0;
+
+// Increment numservers by 1 to take into account starting at 0.
+++$numservers;
+
+for ($serverwalker = 1; $serverwalker <= $numservers; ++$serverwalker) {
 
     // Generate strings corresponding to potential servernames in the config.
-    $thisservername = get_config('block_panopto', 'server_name' . ($x + 1));
-    $thisappkey = get_config('block_panopto', 'application_key' . ($x + 1));
+    $thisservername = get_config('block_panopto', 'server_name' . $serverwalker);
+    $thisappkey = get_config('block_panopto', 'application_key' . $serverwalker);
 
     $hasservername = !is_null_or_empty_string($thisservername);
     if ($hasservername && !is_null_or_empty_string($thisappkey)) {
-        $aserverarray[$x] = $thisservername;
-        $appkeyarray[$x] = $thisappkey;
+        $aserverarray[$serverwalker - 1] = $thisservername;
+        $appkeyarray[$serverwalker - 1] = $thisappkey;
     }
 }
 
@@ -78,7 +83,7 @@ class panopto_provision_form extends moodleform {
     protected $description = '';
 
     /**
-     * Defines a panopto provision form
+     * Defines a Panopto provision form
      */
     public function definition() {
 
@@ -184,7 +189,7 @@ if ($mform->is_cancelled()) {
                 isset($selectedkey) && !empty($selectedkey)) {
 
                 // If we are not using the same server remove the folder ID reference.
-                // NOTE: A moodle course can only point to one panopto server at a time.
+                // NOTE: A Moodle course can only point to one Panopto server at a time.
                 // So reprovisioning to a different server erases the folder mapping to the original server.
                 if ($panoptodata->servername !== $selectedserver) {
                     $panoptodata->sessiongroupid = null;
@@ -196,7 +201,7 @@ if ($mform->is_cancelled()) {
             if (isset($panoptodata->servername) && !empty($panoptodata->servername) &&
                 isset($panoptodata->applicationkey) && !empty($panoptodata->applicationkey)) {
                 $provisioningdata = $panoptodata->get_provisioning_info();
-                $provisioneddata = $panoptodata->provision_course($provisioningdata);
+                $provisioneddata = $panoptodata->provision_course($provisioningdata, false);
                 include('views/provisioned_course.html.php');
             } else if ($coursecount == 1) {
                 // If there is only one course in the count and the server info is invalid redirect to the form for manual provisioning.
@@ -204,12 +209,10 @@ if ($mform->is_cancelled()) {
             } else {
                 // For some reason the server name or application key are invalid and we can't redirect to the form since there are multiple courses, let the user know.
                 echo "<div class='block_panopto'>" .
-                        "<div class='courseProvisionResult'>" .
+                        "<div class='panoptoProcessInformation'>" .
                             "<div class='errorMessage'>" . get_string('server_info_not_valid', 'block_panopto') . "</div>" .
                             "<div class='attribute'>" . get_string('server_name', 'block_panopto') . "</div>" .
                             "<div class='value'>" . format_string($panoptodata->servername, false) . "</div>" .
-                            "<div class='attribute'>" . get_string('application_key', 'block_panopto') . "</div>" .
-                            "<div class='value'>" . format_string($panoptodata->applicationkey) . "</div>" .
                         "</div>" .
                     "</div>";
             }
@@ -220,15 +223,6 @@ if ($mform->is_cancelled()) {
     }
 
     echo $OUTPUT->footer();
-}
-
-/**
- * Returns true if a string is null or empty, false otherwise
- *
- * @param string $name the string being checked for null or empty
- */
-function is_null_or_empty_string($name) {
-    return (!isset($name) || trim($name) === '');
 }
 
 /* End of file provision_course.php */

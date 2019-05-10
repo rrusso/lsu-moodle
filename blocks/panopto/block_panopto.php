@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once('lib/panopto_data.php');
+require_once(dirname(__FILE__) . '/lib/panopto_data.php');
 require_once(dirname(__FILE__) . '/../../lib/accesslib.php');
 
 /**
@@ -42,7 +42,7 @@ class block_panopto extends block_base {
     const CONTENTID = 'block_panopto_content';
 
     /**
-     * Name of the panopto block. Should match the block's directory name on the server.
+     * Name of the Panopto block. Should match the block's directory name on the server.
      *
      * @var string $blockname the name of the current block.
      */
@@ -72,17 +72,28 @@ class block_panopto extends block_base {
     /**
      * Save per-instance config in custom table instead of mdl_block_instance configdata column.
      *
-     * @param array $data the data being set on panopto
+     * @param array $data the data being set on Panopto
      * @param bool $nolongerused depcrecated variable
      */
     public function instance_config_save($data, $nolongerused = false) {
-
         if (!empty($data->course)) {
 
-            panopto_data::set_panopto_course_id($this->page->course->id, $data->course);
             // Add roles mapping.
             $publisherroles = (isset($data->publisher)) ? $data->publisher : array();
             $creatorroles = (isset($data->creator)) ? $data->creator : array();
+
+            // Get the current role mappings set for the current course from the db.
+            $mappings = panopto_data::get_course_role_mappings($this->page->course->id);
+
+            $oldcreators = array_diff($mappings['creator'], $creatorroles);
+            $oldpublishers = array_diff($mappings['publisher'], $publisherroles);
+
+            // Make sure the old unassigned roles get unset.
+            panopto_data::unset_course_role_permissions(
+                $this->page->course->id,
+                $oldpublishers,
+                $oldcreators
+            );
 
             panopto_data::set_course_role_permissions(
                 $this->page->course->id,
@@ -91,43 +102,23 @@ class block_panopto extends block_base {
             );
 
             $panoptodata = new panopto_data($this->page->course->id);
-            $panoptodata->provision_course($panoptodata->get_provisioning_info());
+
+            // Manually overwrite the sessiongroupid on this Panopto_Data instance so we can test provision the attempted new mapping. If the provision fails do not allow it.
+            //  Provision could fail if the user attempts to provision a personal folder.
+            $panoptodata->sessiongroupid = $data->course;
+
+            $provisioninginfo = $panoptodata->get_provisioning_info();
+            $provisioneddata = $panoptodata->provision_course($provisioninginfo, false);
+            if (isset($provisioneddata->Id) && !empty($provisioneddata->Id)) {
+                panopto_data::set_panopto_course_id($this->page->course->id, $data->course);
+            }
         }
     }
 
     /**
      * Cron function to provision all valid courses at once.
-     * Hittesh Ahuja - University of Bath.
      */
     public function cron() {
-        global $DB;
-        $panoptodata = new panopto_data(null);
-
-        // Check Panopto Focus API Settings exist.
-        if (empty($panoptodata->servername) || empty($panoptodata->instancename) || empty($panoptodata->applicationkey)) {
-            mtrace(get_string('unconfigured', 'block_panopto'));
-            return true; // Exiting.
-        }
-        // Get only those courses that have Panopto folders mapped.
-        // For each course, provision the course.
-        $panoptocourses = $DB->get_records('block_panopto_foldermap');
-        foreach ($panoptocourses as $course) {
-
-            // Set the  course to retrieve info for / provision.
-            // Check if the course exists.
-            $moodlecourse = $DB->get_record('course', array('id' => $course->moodleid));
-            if (!$moodlecourse) {
-                continue;
-            }
-            $panoptodata->moodlecourseid = $course->moodleid;
-            $provisioningdata = $panoptodata->get_provisioning_info();
-            $provisioneddata = $panoptodata->provision_course($provisioningdata);
-            if (!empty($provisioneddata)) {
-                mtrace("Successfully provisioned course for $provisioneddata->ExternalCourseID");
-            } else {
-                mtrace("+++ Error provisioning course for Moodle Course ID : $course->moodleid");
-            }
-        }
         return true;
     }
 

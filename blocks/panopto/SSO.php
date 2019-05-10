@@ -15,22 +15,22 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * manages the single sign on logic between panopto and moodle
+ * manages the single sign on logic between Panopto and Moodle
  *
  * @package block_panopto
  * @copyright  Panopto 2009 - 2016 /With contributions from Spenser Jones (sjones@ambrose.edu)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-// This can't be defined moodle internal because it is called from panopto to authorize login.
+// This can't be defined Moodle internal because it is called from Panopto to authorize login.
 
 global $CFG, $USER;
 
 if (empty($CFG)) {
-    require_once('../../config.php');
+    require_once(dirname(__FILE__) . '/../../config.php');
 }
 require_once($CFG->libdir . '/weblib.php');
-require_once('lib/block_panopto_lib.php');
+require_once(dirname(__FILE__) . '/lib/block_panopto_lib.php');
 
 $servername = required_param('serverName', PARAM_HOST);
 $callbackurl = required_param('callbackURL', PARAM_URL);
