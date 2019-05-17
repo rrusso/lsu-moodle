@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * the provision course class for panopto
+ * the provision course class for Panopto
  *
  * @package block_panopto
  * @copyright Panopto 2009 - 2016 /With contributions from Spenser Jones (sjones@ambrose.edu),
@@ -47,13 +47,20 @@ class provision_course extends \core\task\adhoc_task {
      * the main execution function of the class
      */
     public function execute() {
-        $eventdata = (array) $this->get_custom_data();
+        try {
+            $eventdata = (array) $this->get_custom_data();
 
-        $panopto = new \panopto_data($eventdata['courseid']);
-        $panopto->servername = $eventdata['servername'];
-        $panopto->applicationkey = $eventdata['appkey'];
+            $panopto = new \panopto_data($eventdata['courseid']);
 
-        $provisioninginfo = $panopto->get_provisioning_info();
-        $provisioneddata = $panopto->provision_course($provisioninginfo);
+            $targetservers = get_target_panopto_servers();
+            foreach ($targetservers as $targetserver) {
+                $panopto->servername = $targetserver->name;
+                $panopto->applicationkey = $targetserver->appkey;
+                $provisioninginfo = $panopto->get_provisioning_info();
+                $provisioneddata = $panopto->provision_course($provisioninginfo, false);
+            }
+        } catch (Exception $e) {
+            panopto_data::print_log(print_r($e->getMessage(), true));
+        }
     }
 }
