@@ -425,8 +425,7 @@ function report_customsql_write_csv_row($handle, $data, $donotescape) {
         }
 
         // For XML and other specific outputs.
-        // TODO: Do not leave this like this. This is an LSU specific change. Figure out a report specific way to handle this.
-
+        // Ony bypasses escaping the data if it is output via CLI AND the report itself requests $donotescape.
         if (php_sapi_name() === 'cli' && $donotescape) {
             $escapeddata[] = $value;
         } else {
