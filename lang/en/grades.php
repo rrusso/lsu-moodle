@@ -877,3 +877,7 @@ $string['lettersnames'] = 'Letter names';
 $string['lettersname_help'] = 'This setting forces the default letter names defined with this system scale. __Note__: The default letter names are A-F.';
 // END LSU Better Letters.
 
+// BEGIN LSU Drop Lowest Limit.
+$string['droplow_limit'] = 'Drop the lowest limit';
+$string['droplow_limit_help'] = 'By applying this setting, the drop setting will be ignored until the number of droppable grades are > than the drop number.';
+// END LSU Drop Lowest Limit.
