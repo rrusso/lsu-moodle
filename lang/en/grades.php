@@ -881,3 +881,10 @@ $string['lettersname_help'] = 'This setting forces the default letter names defi
 $string['droplow_limit'] = 'Drop the lowest limit';
 $string['droplow_limit_help'] = 'By applying this setting, the drop setting will be ignored until the number of droppable grades are > than the drop number.';
 // END LSU Drop Lowest Limit.
+
+// BEGIN LSU FERPA Student Privacy.
+$string['privacy_ack'] = 'Student privacy';
+$string['privacy_ack_help'] = 'This setting blocks anyone from downloading student grades without confirming they will comply with all laws and policies regarding student rights.';
+$string['privacy_ack_required'] = 'I understand that I am downloading legally protected student data and will comply with all laws and policies related to the protection of student data.';
+$string['missing_privacy_ack_required'] = 'Please agree to the requirements below before downloading any student data.';
+// END LSU FERPA Student Privacy.
