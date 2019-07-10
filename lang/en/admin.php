@@ -1425,5 +1425,5 @@ $string['configallowblockstodock'] = 'If enabled and supported by the selected t
 
 // BEGIN LSU /my page redirect.
 $string['forcehomepage'] = 'Force redirect to site home';
-$string['configforcehomepage'] = 'If enabled and "Default home page for users" is set to "Site", unpriveleged users will be redirecte to site home when visiting /my.';
+$string['configforcehomepage'] = 'If enabled and "Default home page for users" is set to "Site", unpriveleged users will be redirected to the site home when visiting /my.';
 // END LSU /my page redirect.
