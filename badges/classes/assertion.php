@@ -328,12 +328,8 @@ class core_badges_assertion {
 
             $hash = $this->_data->uniquehash;
             $assertionsurl = new moodle_url('/badges/assertion.php', array('b' => $hash, 'obversion' => $this->_obversion));
-            $classurl = new moodle_url(
-                '/badges/assertion.php',
-                array('b' => $hash, 'action' => 1, 'obversion' => $this->_obversion)
-            );
-            $issuerurl = new moodle_url('/badges/assertion.php', array('b' => $this->_data->uniquehash, 'action' => 0,
-                'obversion' => $this->_obversion));
+            $classurl = new moodle_url('/badges/badge_json.php', array('id' => 1));
+            $issuerurl = new moodle_url('/badges/badge_json.php', array('id' => 1, 'action' => 0,));
             // For assertion.
             if ($type == OPEN_BADGES_V2_TYPE_ASSERTION) {
                 $json['@context'] = OPEN_BADGES_V2_CONTEXT;
