@@ -865,7 +865,6 @@ function external_validate_format($format) {
  * @param array $options options array/object or courseid
  * @return string text
  * @since Moodle 3.0
- */
 function external_format_string($str, $contextid, $striplinks = true, $options = array()) {
 
     // Get settings (singleton).
@@ -881,6 +880,45 @@ function external_format_string($str, $contextid, $striplinks = true, $options =
         $str = format_string($str, $striplinks, $options);
     }
 
+    return $str;
+}
+ */
+
+/**
+ * Format the string to be returned properly as requested by the either the web service server,
+ * either by an internally call.
+ * The caller can change the format (raw) with the external_settings singleton
+ * All web service servers must set this singleton when parsing the $_GET and $_POST.
+ *
+ * <pre>
+ * Options are the same that in {@link format_string()} with some changes:
+ *      filter      : Can be set to false to force filters off, else observes {@link external_settings}.
+ * </pre>
+ *
+ * @param string $str The string to be filtered. Should be plain text, expect
+ * possibly for multilang tags.
+ * @param boolean $striplinks To strip any link in the result text. Moodle 1.8 default changed from false to true! MDL-8713
+ * @param int $contextid The id of the context for the string (affects filters).
+ * @param array $options options array/object or courseid
+ * @return string text
+ * @since Moodle 3.0
+ */
+function external_format_string($str, $contextorid, $striplinks = true, $options = array()) {
+    // Get settings (singleton).
+    $settings = external_settings::get_instance();
+    if (empty($contextorid)) {
+        throw new coding_exception('contextid is required');
+    }
+    if (!$settings->get_raw()) {
+        if (is_object($contextorid) && is_a($contextorid, 'context')) {
+            $context = $contextorid;
+        } else {
+            $context = context::instance_by_id($contextorid);
+        }
+        $options['context'] = $context;
+        $options['filter'] = isset($options['filter']) && !$options['filter'] ? false : $settings->get_filter();
+        $str = format_string($str, $striplinks, $options);
+    }
     return $str;
 }
 

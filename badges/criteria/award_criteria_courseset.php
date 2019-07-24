@@ -78,7 +78,7 @@ class award_criteria_courseset extends award_criteria {
         require_once($CFG->dirroot . '/course/lib.php');
         $buttonarray = array();
 
-        $hasselectablecourses = core_course_category::search_courses(['onlywithcompletion' => true], ['limit' => 1]);
+        $hasselectablecourses = $DB->get_records('course', array('enablecompletion' => COMPLETION_ENABLED)); //core_course_category::search_courses(['onlywithcompletion' => true], ['limit' => 1]);
         if ($hasselectablecourses) {
             $settings = array('multiple' => 'multiple', 'onlywithcompletion' => 1);
             $mform->addElement('course', 'courses', get_string('addcourse', 'badges'), $settings);

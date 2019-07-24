@@ -98,6 +98,7 @@ abstract class exporter {
                 }
 
             } else {
+                $related['context'] = context_system::instance();
                 if (array_key_exists($key, $related) &&
                         ((in_array($classname, $scalartypes) && $scalarcheck($related[$key])) ||
                         ($related[$key] instanceof $classname))) {

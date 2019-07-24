@@ -158,7 +158,6 @@ function badges_notify_badge_award(badge $badge, $userid, $issued, $filepathhash
 
     // Notify recipient.
     $eventdata = new \core\message\message();
-    $eventdata->courseid          = is_null($badge->courseid) ? SITEID : $badge->courseid; // Profile/site come with no courseid.
     $eventdata->component         = 'moodle';
     $eventdata->name              = 'badgerecipientnotice';
     $eventdata->userfrom          = $userfrom;
@@ -169,11 +168,6 @@ function badges_notify_badge_award(badge $badge, $userid, $issued, $filepathhash
     $eventdata->fullmessageformat = FORMAT_HTML;
     $eventdata->fullmessagehtml   = $message;
     $eventdata->smallmessage      = '';
-    $eventdata->customdata        = [
-        'notificationiconurl' => moodle_url::make_pluginfile_url(
-            $badge->get_context()->id, 'badges', 'badgeimage', $badge->id, '/', 'f1')->out(),
-        'hash' => $issued,
-    ];
 
     // Attach badge image if possible.
     if (!empty($CFG->allowattachments) && $badge->attachment && is_string($filepathhash)) {
@@ -200,7 +194,6 @@ function badges_notify_badge_award(badge $badge, $userid, $issued, $filepathhash
         $creatorsubject = get_string('creatorsubject', 'badges', $badge->name);
 
         $eventdata = new \core\message\message();
-        $eventdata->courseid          = $badge->courseid;
         $eventdata->component         = 'moodle';
         $eventdata->name              = 'badgecreatornotice';
         $eventdata->userfrom          = $userfrom;
@@ -211,11 +204,6 @@ function badges_notify_badge_award(badge $badge, $userid, $issued, $filepathhash
         $eventdata->fullmessageformat = FORMAT_HTML;
         $eventdata->fullmessagehtml   = $creatormessage;
         $eventdata->smallmessage      = '';
-        $eventdata->customdata        = [
-            'notificationiconurl' => moodle_url::make_pluginfile_url(
-                $badge->get_context()->id, 'badges', 'badgeimage', $badge->id, '/', 'f1')->out(),
-            'hash' => $issued,
-        ];
 
         message_send($eventdata);
         $DB->set_field('badge_issued', 'issuernotified', time(), array('badgeid' => $badge->id, 'userid' => $userid));

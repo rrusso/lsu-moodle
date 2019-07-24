@@ -216,7 +216,7 @@ class backpack_api_mapping {
         $exporter = $this->requestexporter;
         $output = $PAGE->get_renderer('core', 'badges');
         if (!empty($exporter)) {
-            $exporterinstance = new $exporter($value, ['context' => $context]);
+            $exporterinstance = new $exporter($value, ['context' => $context->id]);
             $request = $exporterinstance->export($output);
         }
         if ($this->json) {
