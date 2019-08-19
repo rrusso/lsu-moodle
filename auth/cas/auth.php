@@ -299,7 +299,14 @@ class auth_plugin_cas extends auth_plugin_ldap {
         if (empty($this->config->host_url)) {
             return array();
         }
-        return parent::get_userinfo($username);
+        // BEGIN LSU ldaps bypass if user exists.
+        global $DB;
+        $conditions = array('username' => $username);
+        $user = $DB->get_record('user', $conditions);
+        if (!isset($user->firstname)) {
+            return parent::get_userinfo($username);
+        }
+        // END LSU ldaps bypass if user exists.
     }
 
     /**
